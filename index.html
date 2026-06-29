@@ -185,6 +185,13 @@ hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
   .sidebar{display:none}
   main{padding:22px 18px 100px}
 }
+
+/* ---------- Search highlight + topic filtering ---------- */
+mark.sr{background:var(--accent4); color:#3a2c00; border-radius:3px; padding:0 1px;}
+html[data-theme="dark"] mark.sr{background:var(--accent4); color:#1a1300;}
+.topic{scroll-margin-top:80px;}
+#noResults{display:none; margin:24px 0; padding:18px 20px; border:1px dashed var(--line);
+  border-radius:12px; background:var(--panel); color:var(--muted); text-align:center;}
 </style>
 </head>
 <body>
@@ -215,6 +222,7 @@ hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
     <b>How to use this book.</b> Each topic opens with the <i>idea</i> — what it is and when you'd reach for it — before any syntax. Try to recall or re-derive the answer before reading the code or formula. Use the search bar (or press <kbd>/</kbd>) to jump anywhere; <kbd>Esc</kbd> clears it. Collapse sections you've mastered. Everything renders offline-friendly except the highlight/MathJax CDNs.
   </div>
 
+  <div id="noResults">No matches. Try another term, or press <kbd>Esc</kbd> to clear.</div>
   <!-- ===================== SECTIONS INSERTED HERE ===================== -->
 
   <!-- =========================================================
@@ -1753,6 +1761,437 @@ df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce", utc=True)</
     Tip: print any section to PDF from your browser for offline revision. Last assembled June 2026.
   </div>
 
+  <section data-group="sec-cookbook">
+    <div class="section-band">
+      <span class="ico" style="background:linear-gradient(135deg,var(--accent3),var(--accent4))">🧰</span>
+      <h2 id="cb-overview">Cargo Cookbook — Reusable Code</h2>
+    </div>
+    <p class="lead">Copy-paste-<i>modify</i> recipes drawn from both Rotate Python practice sets (v1 &amp; v2). Every topic the practice notebooks test has a snippet here, written against the airline-cargo frames (<code>df</code>, <code>ship</code>, <code>fx</code>, <code>cust</code>, <code>air</code>) so you can lift a pattern and swap in your own columns. Read the one-line <b>When</b> to pick the right tool, then adapt the code — don&rsquo;t just paste it.</p>
+    <div class="toc-mini">
+      <h4>In this chapter</h4>
+      <ul>
+        <li><a href="#cb-audit">Data audit &amp; first look</a></li>
+        <li><a href="#cb-clean-cats">Normalise messy categoricals</a></li>
+        <li><a href="#cb-dups">Find &amp; drop duplicates</a></li>
+        <li><a href="#cb-missing">Missing data: count, impute, drop</a></li>
+        <li><a href="#cb-invalid">Invalid values &amp; outliers</a></li>
+        <li><a href="#cb-datetime">Datetimes &amp; date features</a></li>
+        <li><a href="#cb-filter-sort">Filter, select &amp; sort</a></li>
+        <li><a href="#cb-groupby">GroupBy &amp; named aggregation</a></li>
+        <li><a href="#cb-merge">Joins / merges</a></li>
+        <li><a href="#cb-mergeasof">Point-in-time join (merge_asof)</a></li>
+        <li><a href="#cb-reshape">Reshape: pivot, melt, crosstab</a></li>
+        <li><a href="#cb-binning">Binning: cut vs qcut</a></li>
+        <li><a href="#cb-window">Window ops: rank, top-N, shift, cumulative</a></li>
+        <li><a href="#cb-timeseries">Resample &amp; rolling windows</a></li>
+        <li><a href="#cb-derived">Derived metrics (yield, load factor)</a></li>
+        <li><a href="#cb-anomaly">Outlier / anomaly detection</a></li>
+        <li><a href="#cb-viz">Visualisation recipes</a></li>
+        <li><a href="#cb-ml-prep">ML preprocessing &amp; leakage</a></li>
+        <li><a href="#cb-ml-reg">Regression: baseline → model → metrics</a></li>
+        <li><a href="#cb-ml-clf">Classification: metrics that matter</a></li>
+        <li><a href="#cb-ml-importance">Feature importance &amp; interpretation</a></li>
+        <li><a href="#cb-pipeline">End-to-end pipeline + validation</a></li>
+        <li><a href="#cb-algo">Pure-Python: class, regex, knapsack</a></li>
+      </ul>
+    </div>
+    <h3 id="cb-audit">Data audit &amp; first look</h3>
+    <p><b>When:</b> the very first thing you do with any new table — shape, types, nulls, uniques, summary stats. (v1 Ex 1.1–1.2, v2 Ex 2.1)</p>
+    <div class="code"><span class="lang">python</span><pre><code># One-shot quality report: dtype + null count + null % + nunique per column
+report = pd.DataFrame({
+    &#x27;dtype&#x27;:   df.dtypes,
+    &#x27;nulls&#x27;:   df.isna().sum(),
+    &#x27;null_%&#x27;:  (df.isna().mean() * 100).round(1),
+    &#x27;nunique&#x27;: df.nunique(),
+})
+print(report)
+
+df.shape            # (rows, cols)
+df.head(5)          # eyeball the data
+df.describe()       # numeric summary: mean/std/min/quartiles/max
+df.describe(include=&#x27;object&#x27;)   # categorical summary: count/unique/top/freq
+df[&#x27;cargo_type&#x27;].value_counts(dropna=False)
+df[&#x27;cargo_type&#x27;].value_counts(normalize=True)   # percentage share</code></pre></div>
+    <h3 id="cb-clean-cats">Normalise messy categoricals</h3>
+    <p><b>When:</b> the same category appears as <code>'PHARMA'</code>, <code>' Pharma '</code>, <code>'pharma'</code>. Standardise before grouping. (v2 Ex 2.2)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Strip whitespace + fix casing so duplicates collapse
+df[&#x27;cargo_type&#x27;] = df[&#x27;cargo_type&#x27;].str.strip().str.title()
+assert df[&#x27;cargo_type&#x27;].nunique() == 6
+
+# Map / rename categories explicitly
+df[&#x27;tier&#x27;] = df[&#x27;account_tier&#x27;].map({&#x27;Bronze&#x27;:1,&#x27;Silver&#x27;:2,&#x27;Gold&#x27;:3,&#x27;Platinum&#x27;:4})
+
+# Replace a set of values, or regex-clean
+df[&#x27;origin&#x27;] = df[&#x27;origin&#x27;].replace({&#x27;Ams&#x27;:&#x27;AMS&#x27;,&#x27;ams&#x27;:&#x27;AMS&#x27;})
+df[&#x27;code&#x27;]   = df[&#x27;code&#x27;].str.replace(r&#x27;\s+&#x27;, &#x27;&#x27;, regex=True)</code></pre></div>
+    <h3 id="cb-dups">Find &amp; drop duplicates</h3>
+    <p><b>When:</b> ingestion injected repeated rows; dedupe before counting or aggregating. (v1 Ex 2.4, v2 Ex 2.3)</p>
+    <div class="code"><span class="lang">python</span><pre><code>df.duplicated().sum()                       # how many full-row dups
+df = df.drop_duplicates().copy()            # keep first occurrence
+
+# Dedupe on a subset of key columns, keep the latest by timestamp
+df = (df.sort_values(&#x27;booking_ts&#x27;)
+        .drop_duplicates(subset=[&#x27;awb&#x27;], keep=&#x27;last&#x27;)
+        .copy())</code></pre></div>
+    <h3 id="cb-missing">Missing data: count, impute, drop</h3>
+    <p><b>When:</b> nulls in numeric/categorical columns. Prefer group-aware imputation over a blind global mean. (v1 Ex 2.3, v2 Ex 2.4)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Count + percentage of nulls
+df.isna().sum()
+(df.isna().mean() * 100).round(2)
+
+# Group-level median impute (much better than a global median)
+df[&#x27;weight_kg&#x27;] = (df.groupby(&#x27;cargo_type&#x27;)[&#x27;weight_kg&#x27;]
+                     .transform(lambda s: s.fillna(s.median())))
+
+# Other strategies
+df[&#x27;col&#x27;] = df[&#x27;col&#x27;].fillna(df[&#x27;col&#x27;].median())     # global
+df[&#x27;col&#x27;] = df[&#x27;col&#x27;].fillna(method=&#x27;ffill&#x27;)         # carry last forward
+df = df.dropna(subset=[&#x27;revenue_local&#x27;])             # drop rows missing a key field</code></pre></div>
+    <h3 id="cb-invalid">Invalid values &amp; outliers</h3>
+    <p><b>When:</b> impossible values (negative weights, 99999 sentinels). Convert to NaN, then impute or clip. (v2 Ex 2.4)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Flag impossible values -&gt; NaN, then impute by group
+bad = (df[&#x27;weight_kg&#x27;] &lt;= 0) | (df[&#x27;weight_kg&#x27;] &gt; 50000)
+df.loc[bad, &#x27;weight_kg&#x27;] = np.nan
+df[&#x27;weight_kg&#x27;] = (df.groupby(&#x27;cargo_type&#x27;)[&#x27;weight_kg&#x27;]
+                     .transform(lambda s: s.fillna(s.median())))
+
+# Or clip (winsorise) into a sane range
+lo, hi = df[&#x27;weight_kg&#x27;].quantile([0.01, 0.99])
+df[&#x27;weight_kg&#x27;] = df[&#x27;weight_kg&#x27;].clip(lo, hi)</code></pre></div>
+    <h3 id="cb-datetime">Datetimes &amp; date features</h3>
+    <p><b>When:</b> timestamps arrive as strings; you need durations and calendar parts. (v1 Ex 2.5, v2 Ex 2.5)</p>
+    <div class="code"><span class="lang">python</span><pre><code>for c in [&#x27;booking_ts&#x27;, &#x27;dep_ts&#x27;, &#x27;arr_ts&#x27;]:
+    df[c] = pd.to_datetime(df[c])           # add errors=&#x27;coerce&#x27; to NaT bad values
+
+# Durations from a Timedelta
+df[&#x27;lead_days&#x27;]     = (df[&#x27;dep_ts&#x27;] - df[&#x27;booking_ts&#x27;]).dt.total_seconds() / 86400
+df[&#x27;transit_hours&#x27;] = (df[&#x27;arr_ts&#x27;] - df[&#x27;dep_ts&#x27;]).dt.total_seconds() / 3600
+
+# Calendar parts via the .dt accessor
+df[&#x27;year&#x27;]    = df[&#x27;booking_ts&#x27;].dt.year
+df[&#x27;month&#x27;]   = df[&#x27;booking_ts&#x27;].dt.month
+df[&#x27;dow&#x27;]     = df[&#x27;booking_ts&#x27;].dt.dayofweek     # 0 = Monday
+df[&#x27;quarter&#x27;] = df[&#x27;booking_ts&#x27;].dt.quarter
+df[&#x27;period&#x27;]  = df[&#x27;booking_ts&#x27;].dt.to_period(&#x27;M&#x27;)</code></pre></div>
+    <h3 id="cb-filter-sort">Filter, select &amp; sort</h3>
+    <p><b>When:</b> subsetting rows/columns. Use <code>.loc</code> with a mask to avoid SettingWithCopy bugs. (v1 Ex 1.3–1.4)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Boolean masks (combine with &amp; | ~ and parentheses)
+mask = (df[&#x27;cargo_type&#x27;] == &#x27;Perishable&#x27;) &amp; (df[&#x27;weight_kg&#x27;] &gt; 500)
+sub  = df.loc[mask, [&#x27;awb&#x27;, &#x27;weight_kg&#x27;, &#x27;revenue_usd&#x27;]]
+
+df[df[&#x27;origin&#x27;].isin([&#x27;AMS&#x27;, &#x27;FRA&#x27;])]          # membership
+df[df[&#x27;weight_kg&#x27;].between(100, 1000)]         # range
+df.query(&#x27;weight_kg &gt; 500 and cargo_type == &quot;Pharma&quot;&#x27;)   # readable filter
+
+# Sort (and grab top N)
+df.sort_values(&#x27;revenue_usd&#x27;, ascending=False).head(10)
+df.nlargest(10, &#x27;revenue_usd&#x27;)                 # faster top-N</code></pre></div>
+    <h3 id="cb-groupby">GroupBy &amp; named aggregation</h3>
+    <p><b>When:</b> collapse rows into per-group metrics; <code>transform</code> keeps original shape. (v1 Ex 2.1, v2 Ex 3.2)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Named aggregation -&gt; clean output column names
+summary = (df.groupby(&#x27;airline_id&#x27;)
+             .agg(total_rev = (&#x27;revenue_usd&#x27;, &#x27;sum&#x27;),
+                  avg_lead  = (&#x27;lead_days&#x27;,   &#x27;mean&#x27;),
+                  total_kg  = (&#x27;weight_kg&#x27;,   &#x27;sum&#x27;),
+                  n_ship    = (&#x27;shipment_id&#x27;, &#x27;count&#x27;),
+                  n_cust    = (&#x27;customer_id&#x27;, &#x27;nunique&#x27;))
+             .sort_values(&#x27;total_rev&#x27;, ascending=False))
+
+# Multiple stats per column
+df.groupby(&#x27;cargo_type&#x27;)[&#x27;revenue_usd&#x27;].agg([&#x27;sum&#x27;, &#x27;mean&#x27;, &#x27;std&#x27;])
+
+# transform broadcasts the group value back to every row (great for shares)
+df[&#x27;airline_total&#x27;] = df.groupby(&#x27;airline_id&#x27;)[&#x27;revenue_usd&#x27;].transform(&#x27;sum&#x27;)
+df[&#x27;rev_share&#x27;]     = df[&#x27;revenue_usd&#x27;] / df[&#x27;airline_total&#x27;]</code></pre></div>
+    <h3 id="cb-merge">Joins / merges</h3>
+    <p><b>When:</b> attach dimension tables. Choosing INNER when you needed LEFT silently drops rows — validate. (v1 Ex 2.2, v2 Ex 3.3)</p>
+    <div class="code"><span class="lang">python</span><pre><code>m = (df.merge(cust, on=&#x27;customer_id&#x27;, how=&#x27;left&#x27;)
+        .merge(air,  on=&#x27;airline_id&#x27;,  how=&#x27;left&#x27;))
+
+# Guard against accidental row explosion / dropped rows
+df.merge(cust, on=&#x27;customer_id&#x27;, how=&#x27;left&#x27;, validate=&#x27;many_to_one&#x27;)
+df.merge(cust, on=&#x27;customer_id&#x27;, how=&#x27;left&#x27;, indicator=True)[&#x27;_merge&#x27;].value_counts()
+
+# Different key names on each side
+df.merge(routes, left_on=&#x27;route_id&#x27;, right_on=&#x27;id&#x27;, how=&#x27;left&#x27;)</code></pre></div>
+    <h3 id="cb-mergeasof">Point-in-time join (merge_asof)</h3>
+    <p><b>When:</b> attach the rate/price <i>in effect at</i> each event time (FX, prices). A plain merge is wrong. (v2 Ex 3.1)</p>
+    <div class="code"><span class="lang">python</span><pre><code>fx[&#x27;rate_date&#x27;] = pd.to_datetime(fx[&#x27;rate_date&#x27;])
+
+# BOTH frames must be sorted on the time key
+out = pd.merge_asof(
+    df.sort_values(&#x27;booking_ts&#x27;),
+    fx.sort_values(&#x27;rate_date&#x27;),
+    left_on=&#x27;booking_ts&#x27;, right_on=&#x27;rate_date&#x27;,
+    by=&#x27;currency&#x27;,            # match within the same currency
+    direction=&#x27;backward&#x27;,     # most recent rate on/before booking_ts
+)
+out[&#x27;revenue_usd&#x27;] = out[&#x27;revenue_local&#x27;] * out[&#x27;usd_per_unit&#x27;]
+assert out[&#x27;revenue_usd&#x27;].isna().sum() == 0</code></pre></div>
+    <h3 id="cb-reshape">Reshape: pivot, melt, crosstab</h3>
+    <p><b>When:</b> go wide↔long for matrices, heatmaps, or tidy data. (v2 Ex 3.4)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Long -&gt; wide matrix (airline x cargo_type) with totals
+pt = pd.pivot_table(df, index=&#x27;airline_id&#x27;, columns=&#x27;cargo_type&#x27;,
+                    values=&#x27;revenue_usd&#x27;, aggfunc=&#x27;sum&#x27;,
+                    fill_value=0, margins=True)
+
+# Wide -&gt; long (tidy) for plotting
+long = pt.reset_index().melt(id_vars=&#x27;airline_id&#x27;,
+                             var_name=&#x27;cargo_type&#x27;, value_name=&#x27;revenue&#x27;)
+
+# Frequency table
+pd.crosstab(df[&#x27;airline_id&#x27;], df[&#x27;cargo_type&#x27;])
+pd.crosstab(df[&#x27;airline_id&#x27;], df[&#x27;cargo_type&#x27;], normalize=&#x27;index&#x27;)   # row %</code></pre></div>
+    <h3 id="cb-binning">Binning: cut vs qcut</h3>
+    <p><b>When:</b> turn a numeric column into labelled buckets. <code>cut</code> = fixed edges, <code>qcut</code> = equal counts. (v2 Ex 3.5)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Equal-frequency quartiles (each bucket ~ same number of rows)
+df[&#x27;weight_q&#x27;] = pd.qcut(df[&#x27;weight_kg&#x27;], q=4, labels=[&#x27;Q1&#x27;,&#x27;Q2&#x27;,&#x27;Q3&#x27;,&#x27;Q4&#x27;])
+
+# Fixed value ranges
+df[&#x27;weight_band&#x27;] = pd.cut(df[&#x27;weight_kg&#x27;],
+                           bins=[0, 250, 750, 2000, np.inf],
+                           labels=[&#x27;XS&#x27;,&#x27;S&#x27;,&#x27;M&#x27;,&#x27;L&#x27;])
+
+df.groupby(&#x27;weight_q&#x27;)[&#x27;revenue_usd&#x27;].agg([&#x27;count&#x27;, &#x27;sum&#x27;])</code></pre></div>
+    <h3 id="cb-window">Window ops: rank, top-N, shift, cumulative</h3>
+    <p><b>When:</b> per-row calculations relative to a group — ranking, running totals, period-over-period. (v1 Ex 3.2 & 3.5, v2 Ex 4.3 & 4.5)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Rank routes within each airline by revenue
+df[&#x27;rev_rank&#x27;] = (df.groupby(&#x27;airline_id&#x27;)[&#x27;revenue_usd&#x27;]
+                    .rank(method=&#x27;dense&#x27;, ascending=False))
+
+# Top 3 customers per origin
+tot = (df.groupby([&#x27;origin&#x27;,&#x27;customer_id&#x27;], as_index=False)[&#x27;revenue_usd&#x27;].sum())
+top3 = (tot.sort_values(&#x27;revenue_usd&#x27;, ascending=False)
+           .groupby(&#x27;origin&#x27;).head(3))
+
+# Month-over-month growth per airline (no bleed across groups)
+monthly = (df.groupby([&#x27;airline_id&#x27;, df[&#x27;dep_ts&#x27;].dt.to_period(&#x27;M&#x27;)])[&#x27;revenue_usd&#x27;]
+             .sum().rename(&#x27;rev&#x27;).reset_index())
+monthly[&#x27;mom_%&#x27;] = monthly.groupby(&#x27;airline_id&#x27;)[&#x27;rev&#x27;].pct_change() * 100
+
+# Cumulative + lag/lead
+df[&#x27;cum_rev&#x27;] = df.sort_values(&#x27;dep_ts&#x27;)[&#x27;revenue_usd&#x27;].cumsum()
+df[&#x27;prev_rev&#x27;] = df.groupby(&#x27;airline_id&#x27;)[&#x27;revenue_usd&#x27;].shift(1)</code></pre></div>
+    <h3 id="cb-timeseries">Resample &amp; rolling windows</h3>
+    <p><b>When:</b> a regular time series — daily totals, moving averages, trend. Needs a DatetimeIndex. (v1 Ex 3.3, v2 Ex 4.1–4.2)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Continuous daily revenue series (missing days -&gt; 0)
+daily = (df.set_index(&#x27;dep_ts&#x27;)
+           .resample(&#x27;D&#x27;)[&#x27;revenue_usd&#x27;].sum())
+
+daily.rolling(7).mean()        # 7-row moving average
+daily.rolling(&#x27;7D&#x27;).mean()     # 7-DAY window (robust to gaps)
+daily.expanding().mean()       # cumulative-to-date average
+
+# One route only, rolling 7-day average
+route = (df[(df.origin==&#x27;AMS&#x27;) &amp; (df.destination==&#x27;JFK&#x27;)]
+           .set_index(&#x27;dep_ts&#x27;).sort_index())
+route[&#x27;roll7&#x27;] = route[&#x27;revenue_usd&#x27;].rolling(&#x27;7D&#x27;).mean()</code></pre></div>
+    <h3 id="cb-derived">Derived metrics (yield, load factor)</h3>
+    <p><b>When:</b> build domain KPIs with fast vectorised math; reserve <code>apply</code> for non-vectorisable logic. (v1 Ex 2.6 & 3.1)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Vectorised (fast) — operate on whole columns
+df[&#x27;yield_usd_kg&#x27;] = df[&#x27;revenue_usd&#x27;] / df[&#x27;weight_kg&#x27;]
+
+# Load factor = used payload / capacity (after joining capacity)
+df[&#x27;load_factor&#x27;] = df[&#x27;weight_kg&#x27;] / df[&#x27;max_payload_kg&#x27;]
+
+# np.where for conditional columns
+df[&#x27;is_heavy&#x27;] = np.where(df[&#x27;weight_kg&#x27;] &gt; 1000, &#x27;Heavy&#x27;, &#x27;Light&#x27;)
+
+# apply only when you truly can&#x27;t vectorise
+df[&#x27;band&#x27;] = df[&#x27;load_factor&#x27;].apply(
+    lambda x: &#x27;over&#x27; if x &gt; 1 else (&#x27;high&#x27; if x &gt; .8 else &#x27;ok&#x27;))</code></pre></div>
+    <h3 id="cb-anomaly">Outlier / anomaly detection</h3>
+    <p><b>When:</b> flag suspicious values for QA or monitoring. Z-score assumes ~normal; IQR is robust to skew. (v2 Ex 4.4)</p>
+    <div class="code"><span class="lang">python</span><pre><code>x = df[&#x27;revenue_usd&#x27;]
+
+# 1) Z-score rule
+z = (x - x.mean()) / x.std()
+z_out = z.abs() &gt; 3
+
+# 2) IQR rule (robust, distribution-free)
+q1, q3 = x.quantile([0.25, 0.75]); iqr = q3 - q1
+iqr_out = (x &lt; q1 - 1.5*iqr) | (x &gt; q3 + 1.5*iqr)
+
+print(&#x27;z-score flags:&#x27;, z_out.sum(),
+      &#x27;| IQR flags:&#x27;, iqr_out.sum(),
+      &#x27;| overlap:&#x27;, (z_out &amp; iqr_out).sum())</code></pre></div>
+    <h3 id="cb-viz">Visualisation recipes</h3>
+    <p><b>When:</b> EDA. Each plot answers a question: shape (hist), spread by group (box), relationships (heatmap/scatter), trend (line). (v2 Ex 1.1–1.5)</p>
+    <div class="code"><span class="lang">python</span><pre><code>import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_theme(style=&#x27;whitegrid&#x27;)
+
+# Distribution + skew (log scale tames a long right tail)
+sns.histplot(df[&#x27;revenue_usd&#x27;], bins=50)
+sns.histplot(df[&#x27;revenue_usd&#x27;], bins=50, log_scale=True)
+
+# Spread of a metric across categories
+order = df.groupby(&#x27;cargo_type&#x27;)[&#x27;yield_usd_kg&#x27;].median().sort_values().index
+sns.boxplot(data=df, x=&#x27;cargo_type&#x27;, y=&#x27;yield_usd_kg&#x27;, order=order)
+plt.xticks(rotation=45)
+
+# Correlation heatmap (watch for target leakage!)
+num = [&#x27;weight_kg&#x27;,&#x27;volume_m3&#x27;,&#x27;pieces&#x27;,&#x27;lead_days&#x27;,&#x27;revenue_usd&#x27;]
+sns.heatmap(df[num].corr(), annot=True, cmap=&#x27;coolwarm&#x27;, center=0)
+
+# Trend: daily revenue + 7-day rolling mean on one axes
+daily = df.set_index(&#x27;dep_ts&#x27;).resample(&#x27;D&#x27;)[&#x27;revenue_usd&#x27;].sum()
+ax = daily.plot(alpha=.3, label=&#x27;daily&#x27;)
+daily.rolling(7).mean().plot(ax=ax, lw=2, label=&#x27;7-day avg&#x27;); ax.legend()
+
+# Top-N bar + relationship scatter
+top = (df.assign(route=df.origin+&#x27;-&gt;&#x27;+df.destination)
+         .groupby(&#x27;route&#x27;)[&#x27;revenue_usd&#x27;].sum().nlargest(10))
+top.plot.barh()
+sns.scatterplot(data=df, x=&#x27;weight_kg&#x27;, y=&#x27;revenue_usd&#x27;,
+                hue=&#x27;cargo_type&#x27;, alpha=.5)</code></pre></div>
+    <h3 id="cb-ml-prep">ML preprocessing &amp; leakage</h3>
+    <p><b>When:</b> before any model. Encode categoricals inside a pipeline so the test set is never seen during fitting; drop target-derived columns. (v2 Ex 6.1–6.2)</p>
+    <div class="code"><span class="lang">python</span><pre><code>from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
+num_feats = [&#x27;weight_kg&#x27;,&#x27;volume_m3&#x27;,&#x27;pieces&#x27;,&#x27;lead_days&#x27;,&#x27;book_month&#x27;,&#x27;book_dow&#x27;]
+cat_feats = [&#x27;cargo_type&#x27;,&#x27;origin&#x27;,&#x27;destination&#x27;,&#x27;airline_id&#x27;]
+# EXCLUDE revenue_local, yield_usd_kg, usd_per_unit -&gt; they encode the target (leakage)
+
+X = df[num_feats + cat_feats]
+y = df[&#x27;revenue_usd&#x27;]
+
+pre = ColumnTransformer(
+    [(&#x27;cat&#x27;, OneHotEncoder(handle_unknown=&#x27;ignore&#x27;), cat_feats)],
+    remainder=&#x27;passthrough&#x27;)          # numerics pass through unchanged
+
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.25, random_state=0)</code></pre></div>
+    <h3 id="cb-ml-reg">Regression: baseline → model → metrics</h3>
+    <p><b>When:</b> predicting a number. Always beat a baseline; report MAE/RMSE/R²; consider a log target for skew. (v2 Ex 6.3–6.4, 6.7)</p>
+    <div class="code"><span class="lang">python</span><pre><code>from sklearn.dummy import DummyRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_score
+# sklearn &gt;= 1.4: use root_mean_squared_error(); the old
+# mean_squared_error(..., squared=False) was removed in 1.6.
+
+def score(name, model):
+    model.fit(X_tr, y_tr); p = model.predict(X_te)
+    print(f&quot;{name:9} MAE {mean_absolute_error(y_te,p):8.0f} &quot;
+          f&quot;RMSE {root_mean_squared_error(y_te,p):8.0f} &quot;
+          f&quot;R2 {r2_score(y_te,p):.3f}&quot;)
+
+score(&#x27;baseline&#x27;, DummyRegressor())
+score(&#x27;linear&#x27;,   Pipeline([(&#x27;pre&#x27;,pre),(&#x27;m&#x27;,LinearRegression())]))
+rf = Pipeline([(&#x27;pre&#x27;,pre),(&#x27;m&#x27;,RandomForestRegressor(n_estimators=200,random_state=0))])
+score(&#x27;forest&#x27;,   rf)
+
+# Cross-validation (mean +/- std across 5 folds)
+cv = cross_val_score(rf, X, y, cv=5, scoring=&#x27;r2&#x27;)
+print(&#x27;CV R2 %.3f +/- %.3f&#x27; % (cv.mean(), cv.std()))
+
+# Log-target trick for right-skewed y
+import numpy as np
+rf.fit(X_tr, np.log1p(y_tr))
+pred = np.expm1(rf.predict(X_te))
+print(&#x27;log-target MAE&#x27;, mean_absolute_error(y_te, pred))</code></pre></div>
+    <h3 id="cb-ml-clf">Classification: metrics that matter</h3>
+    <p><b>When:</b> predicting a label. Use ROC-AUC for ranking quality, confusion matrix + precision/recall for decisions; stratify the split. (v2 Ex 6.5)</p>
+    <div class="code"><span class="lang">python</span><pre><code>from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import (roc_auc_score, confusion_matrix,
+                             classification_report, RocCurveDisplay)
+
+yc = df[&#x27;high_value&#x27;]                          # 1 if above-median revenue
+Xc_tr, Xc_te, yc_tr, yc_te = train_test_split(
+    X, yc, test_size=0.25, random_state=0, stratify=yc)
+
+clf = Pipeline([(&#x27;pre&#x27;, pre),
+                (&#x27;m&#x27;, RandomForestClassifier(n_estimators=200, random_state=0))])
+clf.fit(Xc_tr, yc_tr)
+
+proba = clf.predict_proba(Xc_te)[:, 1]
+pred  = clf.predict(Xc_te)
+print(&#x27;ROC-AUC&#x27;, roc_auc_score(yc_te, proba))
+print(confusion_matrix(yc_te, pred))
+print(classification_report(yc_te, pred))
+RocCurveDisplay.from_estimator(clf, Xc_te, yc_te)</code></pre></div>
+    <h3 id="cb-ml-importance">Feature importance &amp; interpretation</h3>
+    <p><b>When:</b> explaining a fitted model. Map one-hot names back; prefer permutation importance when features are correlated. (v2 Ex 6.6)</p>
+    <div class="code"><span class="lang">python</span><pre><code>model = rf.named_steps[&#x27;m&#x27;]
+ohe   = rf.named_steps[&#x27;pre&#x27;].named_transformers_[&#x27;cat&#x27;]
+names = list(ohe.get_feature_names_out(cat_feats)) + num_feats
+
+imp = (pd.Series(model.feature_importances_, index=names)
+         .sort_values(ascending=False))
+imp.head(10).plot.barh()
+
+# More honest under correlation: permutation importance
+from sklearn.inspection import permutation_importance
+r = permutation_importance(rf, X_te, y_te, n_repeats=10, random_state=0)
+pd.Series(r.importances_mean, index=X_te.columns).sort_values().tail(10)</code></pre></div>
+    <h3 id="cb-pipeline">End-to-end pipeline + validation</h3>
+    <p><b>When:</b> packaging cleaning into one reusable, testable function that never mutates its inputs. (v1 Ex 4.1–4.2, v2 Ex 7.1–7.3)</p>
+    <div class="code"><span class="lang">python</span><pre><code>def build_revenue_table(ship, fx):
+    &quot;&quot;&quot;Raw shipments + FX -&gt; clean, USD-denominated analysis table.&quot;&quot;&quot;
+    df = ship.copy()                                  # never mutate the input
+    df[&#x27;cargo_type&#x27;] = df[&#x27;cargo_type&#x27;].str.strip().str.title()
+    df = df.drop_duplicates()
+    bad = (df[&#x27;weight_kg&#x27;] &lt;= 0) | (df[&#x27;weight_kg&#x27;] &gt; 50000)
+    df.loc[bad, &#x27;weight_kg&#x27;] = np.nan
+    df[&#x27;weight_kg&#x27;] = (df.groupby(&#x27;cargo_type&#x27;)[&#x27;weight_kg&#x27;]
+                         .transform(lambda s: s.fillna(s.median())))
+    for c in [&#x27;booking_ts&#x27;,&#x27;dep_ts&#x27;,&#x27;arr_ts&#x27;]:
+        df[c] = pd.to_datetime(df[c])
+    df = df.dropna(subset=[&#x27;revenue_local&#x27;])
+    fx2 = fx.copy(); fx2[&#x27;rate_date&#x27;] = pd.to_datetime(fx2[&#x27;rate_date&#x27;])
+    df = pd.merge_asof(df.sort_values(&#x27;booking_ts&#x27;), fx2.sort_values(&#x27;rate_date&#x27;),
+                       left_on=&#x27;booking_ts&#x27;, right_on=&#x27;rate_date&#x27;,
+                       by=&#x27;currency&#x27;, direction=&#x27;backward&#x27;)
+    df[&#x27;revenue_usd&#x27;]  = df[&#x27;revenue_local&#x27;] * df[&#x27;usd_per_unit&#x27;]
+    df[&#x27;yield_usd_kg&#x27;] = df[&#x27;revenue_usd&#x27;] / df[&#x27;weight_kg&#x27;]
+    return df
+
+def validate(df):
+    errs = []
+    if df[[&#x27;weight_kg&#x27;,&#x27;revenue_usd&#x27;]].isna().any().any(): errs.append(&#x27;nulls in key cols&#x27;)
+    if (df[&#x27;weight_kg&#x27;] &lt;= 0).any():                       errs.append(&#x27;non-positive weight&#x27;)
+    if df[&#x27;cargo_type&#x27;].nunique() != 6:                    errs.append(&#x27;unexpected categories&#x27;)
+    assert not errs, errs
+    return &#x27;OK&#x27;
+
+before = ship.shape
+clean = build_revenue_table(ship, fx)
+print(validate(clean), &#x27;| in&#x27;, before, &#x27;-&gt; out&#x27;, clean.shape)
+assert ship.shape == before          # input untouched</code></pre></div>
+    <h3 id="cb-algo">Pure-Python: class, regex, knapsack</h3>
+    <p><b>When:</b> the live-coding round — no pandas. Tests fundamentals: encapsulation, parsing, and dynamic programming. (v2 Ex 5.1–5.3)</p>
+    <div class="code"><span class="lang">python</span><pre><code>import re
+
+# 1) A small domain class
+class ULDContainer:
+    def __init__(self, uld_id, max_weight, max_volume):
+        self.uld_id, self.max_w, self.max_v = uld_id, max_weight, max_volume
+        self.w = self.v = 0.0; self.items = []
+    def add(self, sid, weight, volume):
+        if self.w + weight &gt; self.max_w or self.v + volume &gt; self.max_v:
+            return False                      # check BEFORE committing
+        self.w += weight; self.v += volume; self.items.append(sid)
+        return True
+    def utilization(self):
+        return (self.w / self.max_w, self.v / self.max_v)
+
+# 2) Parse structured records from a log, skip junk
+pat = re.compile(r&#x27;AWB (?P&lt;awb&gt;\d{3}-\d{8}) .* weight=(?P&lt;w&gt;[\d.]+) status=(?P&lt;s&gt;\w+)&#x27;)
+records = [m.groupdict() for line in log_lines if (m := pat.search(line))]
+
+# 3) 0/1 knapsack: max revenue under a weight cap (DP, O(n*cap))
+def best_load(items, cap):                    # items: (id, weight, revenue)
+    dp = [0] * (cap + 1)
+    for _id, w, v in items:
+        for c in range(cap, w - 1, -1):       # iterate DOWN so each item used once
+            dp[c] = max(dp[c], dp[c - w] + v)
+    return dp[cap]</code></pre></div>
+    <div class="key"><b>Coverage.</b> These recipes map 1:1 to the exercises in <code>rotate_python_practice.ipynb</code> (v1) and <code>rotate_python_practice_set2.ipynb</code> (v2): audit, cleaning, missing/invalid data, datetimes, filtering, groupby, joins, point-in-time joins, reshaping, binning, window functions, resampling, derived KPIs, anomaly detection, visualisation, and the full ML and pure-Python algorithmic rounds.</div>
+  </section>
   </main>
 </div>
 
@@ -1767,6 +2206,7 @@ const groupMeta = {
   'sec-math':     {label:'📐 Math & Statistics',  color:'var(--accent4)'},
   'sec-ml':       {label:'🤖 Machine Learning',   color:'var(--accent)'},
   'sec-interview':{label:'🎯 Interview Prep',      color:'var(--accent2)'},
+  'sec-cookbook': {label:'🧰 Cargo Cookbook',      color:'var(--accent3)'},
 };
 function buildNav(){
   const sb = document.getElementById('sidebar');
@@ -1842,24 +2282,113 @@ document.getElementById('expandAll').addEventListener('click',()=>{
   document.querySelectorAll('.nav-group').forEach(g=>g.classList.toggle('collapsed',allCollapsed));
 });
 
-/* ---------- Search / filter ---------- */
-const search=document.getElementById('search');
-const allSections=[...document.querySelectorAll('main section')];
-function clearMarks(){document.querySelectorAll('main mark').forEach(m=>{m.replaceWith(document.createTextNode(m.textContent));});}
-search.addEventListener('input',()=>{
-  const q=search.value.trim().toLowerCase();
-  if(!q){allSections.forEach(s=>s.style.display='');clearMarks();return;}
-  let any=false;
-  allSections.forEach(s=>{
-    const hit=s.textContent.toLowerCase().includes(q);
-    s.style.display=hit?'':'none';
-    if(hit)any=true;
+/* ---------- Search / filter (per-topic, with highlighting) ---------- */
+(function(){
+  const search = document.getElementById('search');
+  const main   = document.getElementById('main');
+  const noRes  = document.getElementById('noResults');
+  if(!search || !main) return;
+
+  // Wrap each <h3>-led topic (heading + following siblings up to the next h3)
+  // into a .topic block so search can show/hide at topic granularity.
+  main.querySelectorAll('section[data-group]').forEach(sec=>{
+    let cur = null;
+    [...sec.children].forEach(node=>{
+      if(node.tagName === 'H3'){
+        cur = document.createElement('div');
+        cur.className = 'topic';
+        sec.insertBefore(cur, node);
+        cur.appendChild(node);
+      } else if(cur && !node.classList.contains('topic')){
+        cur.appendChild(node);
+      }
+    });
   });
-});
-document.addEventListener('keydown',e=>{
-  if(e.key==='/' && document.activeElement!==search){e.preventDefault();search.focus();}
-  if(e.key==='Escape'){search.value='';search.dispatchEvent(new Event('input'));search.blur();}
-});
+
+  const sections = [...main.querySelectorAll('section[data-group]')];
+  const topics   = [...main.querySelectorAll('.topic')];
+  topics.forEach(t => t._text = t.textContent.toLowerCase());
+  sections.forEach(s=>{
+    const band = s.querySelector(':scope > .section-band');
+    const lead = s.querySelector(':scope > .lead');
+    s._headText = ((band?band.textContent:'') + ' ' + (lead?lead.textContent:'')).toLowerCase();
+  });
+
+  function clearMarks(){
+    main.querySelectorAll('mark.sr').forEach(m=>{
+      const p = m.parentNode;
+      p.replaceChild(document.createTextNode(m.textContent), m);
+      p.normalize();
+    });
+  }
+
+  function highlight(root, q){
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(n){
+        if(!n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        const p = n.parentNode; if(!p) return NodeFilter.FILTER_REJECT;
+        const tag = p.nodeName;
+        if(tag==='MARK' || tag==='SCRIPT' || tag==='STYLE') return NodeFilter.FILTER_REJECT;
+        if(p.closest && p.closest('svg')) return NodeFilter.FILTER_REJECT;
+        return n.nodeValue.toLowerCase().includes(q) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    const hits = []; let n;
+    while(n = walker.nextNode()) hits.push(n);
+    hits.forEach(node=>{
+      const text = node.nodeValue, low = text.toLowerCase();
+      const frag = document.createDocumentFragment();
+      let i = 0, idx;
+      while((idx = low.indexOf(q, i)) !== -1){
+        if(idx > i) frag.appendChild(document.createTextNode(text.slice(i, idx)));
+        const m = document.createElement('mark'); m.className = 'sr';
+        m.textContent = text.slice(idx, idx + q.length);
+        frag.appendChild(m);
+        i = idx + q.length;
+      }
+      if(i < text.length) frag.appendChild(document.createTextNode(text.slice(i)));
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+
+  function run(){
+    const q = search.value.trim().toLowerCase();
+    clearMarks();
+    if(!q){
+      topics.forEach(t => t.style.display = '');
+      sections.forEach(s=>{
+        s.style.display = '';
+        const toc = s.querySelector(':scope > .toc-mini'); if(toc) toc.style.display = '';
+        const lead = s.querySelector(':scope > .lead');    if(lead) lead.style.display = '';
+      });
+      if(noRes) noRes.style.display = 'none';
+      return;
+    }
+    let total = 0;
+    sections.forEach(sec=>{
+      let hits = 0;
+      sec.querySelectorAll(':scope > .topic').forEach(t=>{
+        const hit = t._text.includes(q);
+        t.style.display = hit ? '' : 'none';
+        if(hit){ hits++; highlight(t, q); }
+      });
+      const headHit = sec._headText.includes(q);
+      const show = hits > 0 || headHit;
+      sec.style.display = show ? '' : 'none';
+      // hide chapter chrome while filtering to reduce noise
+      const toc = sec.querySelector(':scope > .toc-mini'); if(toc) toc.style.display = 'none';
+      const lead = sec.querySelector(':scope > .lead');    if(lead) lead.style.display = headHit ? '' : 'none';
+      total += hits;
+    });
+    if(noRes) noRes.style.display = total ? 'none' : '';
+  }
+
+  search.addEventListener('input', run);
+  document.addEventListener('keydown', e=>{
+    if(e.key === '/' && document.activeElement !== search){ e.preventDefault(); search.focus(); }
+    if(e.key === 'Escape'){ search.value=''; run(); search.blur(); }
+  });
+})();
 
 /* ---------- Back to top ---------- */
 const backtop=document.getElementById('backtop');
