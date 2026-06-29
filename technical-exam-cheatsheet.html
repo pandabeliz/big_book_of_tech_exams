@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Big Book of Technical Exams · Python · SQL · Math · ML</title>
+
+<!-- Syntax highlighting -->
+<link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<!-- Math rendering -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]'], ['$$','$$']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" id="MathJax-script" async></script>
+
+<style>
+:root{
+  --bg:#fbf7fb; --panel:#ffffff; --ink:#2d2a3a; --muted:#7b7589;
+  --line:#ece6f0; --line2:#f3eef6;
+  --accent:#b57edc; --accent2:#ff8fb3; --accent3:#6dd6c4; --accent4:#ffc46b;
+  --code-bg:#faf6fc; --code-ink:#3a3550; --kbd:#efe7f4;
+  --sidebar-w:300px; --shadow:0 8px 30px rgba(120,80,160,.08);
+  --pill-bg:#f5edfa;
+}
+html[data-theme="dark"]{
+  --bg:#17141f; --panel:#1f1b2b; --ink:#ece8f5; --muted:#a39bb8;
+  --line:#2c2740; --line2:#241f33;
+  --accent:#c89cf0; --accent2:#ff9dbf; --accent3:#7fe3d2; --accent4:#ffd083;
+  --code-bg:#15121d; --code-ink:#e3def0; --kbd:#2c2740;
+  --shadow:0 8px 30px rgba(0,0,0,.4); --pill-bg:#2a2440;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  font-size:15.5px; line-height:1.65; scroll-padding-top:80px;
+}
+a{color:var(--accent); text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50; height:60px;
+  display:flex; align-items:center; gap:14px; padding:0 20px;
+  background:color-mix(in srgb, var(--panel) 86%, transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+}
+.brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:-.02em; font-size:17px;white-space:nowrap}
+.brand .logo{
+  width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:#fff;font-size:16px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:var(--shadow)
+}
+.search-wrap{flex:1; max-width:520px; position:relative}
+#search{
+  width:100%; padding:9px 14px 9px 38px; border-radius:999px; border:1px solid var(--line);
+  background:var(--panel); color:var(--ink); font-size:14px; outline:none;
+}
+#search:focus{border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.search-wrap svg{position:absolute; left:13px; top:50%; transform:translateY(-50%); opacity:.5}
+.topbar-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn{
+  border:1px solid var(--line); background:var(--panel); color:var(--ink);
+  border-radius:10px; padding:8px 12px; cursor:pointer; font-size:13px; font-weight:600;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn:hover{border-color:var(--accent)}
+
+/* ---------- Layout ---------- */
+.layout{display:flex; align-items:flex-start}
+.sidebar{
+  position:sticky; top:60px; width:var(--sidebar-w); flex:0 0 var(--sidebar-w);
+  height:calc(100vh - 60px); overflow-y:auto; padding:18px 10px 60px 18px;
+  border-right:1px solid var(--line);
+}
+.sidebar::-webkit-scrollbar{width:8px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+.nav-group{margin-bottom:6px}
+.nav-group > .nav-head{
+  display:flex;align-items:center;gap:8px;width:100%; cursor:pointer; user-select:none;
+  padding:8px 10px; border-radius:9px; font-weight:700; font-size:13.5px; color:var(--ink);
+  background:none;border:none;text-align:left;
+}
+.nav-group > .nav-head:hover{background:var(--line2)}
+.nav-head .chev{margin-left:auto; transition:transform .2s; opacity:.6}
+.nav-group.collapsed .chev{transform:rotate(-90deg)}
+.nav-head .dot{width:9px;height:9px;border-radius:3px}
+.nav-links{display:flex;flex-direction:column; padding:2px 0 6px 26px; gap:1px}
+.nav-group.collapsed .nav-links{display:none}
+.nav-links a{
+  color:var(--muted); font-size:13px; padding:5px 9px; border-radius:7px; text-decoration:none;
+  border-left:2px solid transparent;
+}
+.nav-links a:hover{background:var(--line2); color:var(--ink)}
+.nav-links a.active{color:var(--accent); background:var(--pill-bg); border-left-color:var(--accent); font-weight:600}
+
+/* ---------- Content ---------- */
+main{flex:1; min-width:0; padding:34px 46px 120px; max-width:1000px; margin:0 auto}
+.hero{
+  border-radius:20px; padding:34px 36px; margin-bottom:30px; color:#fff; position:relative; overflow:hidden;
+  background:linear-gradient(135deg,var(--accent) 0%, var(--accent2) 60%, var(--accent4) 130%);
+  box-shadow:var(--shadow);
+}
+.hero h1{margin:0 0 8px; font-size:30px; letter-spacing:-.02em}
+.hero p{margin:0; opacity:.95; max-width:640px}
+.hero .tags{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+.hero .tags span{background:rgba(255,255,255,.22);padding:4px 12px;border-radius:999px;font-size:12.5px;font-weight:600}
+
+section{scroll-margin-top:74px; margin-bottom:14px}
+.section-band{
+  display:flex;align-items:center;gap:12px; margin:46px 0 14px; padding-bottom:10px;
+  border-bottom:2px solid var(--line);
+}
+.section-band .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:20px;color:#fff;box-shadow:var(--shadow)}
+.section-band h2{margin:0;font-size:25px;letter-spacing:-.02em}
+h3{font-size:19px; margin:30px 0 8px; letter-spacing:-.01em; scroll-margin-top:74px}
+h4{font-size:15.5px; margin:20px 0 6px; color:var(--accent)}
+p{margin:8px 0}
+.lead{color:var(--muted)}
+
+/* cards / callouts */
+.note,.tip,.warn,.key{
+  border-radius:12px; padding:12px 16px; margin:14px 0; border:1px solid var(--line);
+  background:var(--panel); position:relative; padding-left:46px;
+}
+.note::before,.tip::before,.warn::before,.key::before{
+  position:absolute; left:14px; top:12px; font-size:16px;
+}
+.note{border-left:3px solid var(--accent)} .note::before{content:"📝"}
+.tip{border-left:3px solid var(--accent3)} .tip::before{content:"💡"}
+.warn{border-left:3px solid var(--accent2)} .warn::before{content:"⚠️"}
+.key{border-left:3px solid var(--accent4)} .key::before{content:"🔑"}
+.note b,.tip b,.warn b,.key b{color:var(--ink)}
+
+/* tables */
+.tbl{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:12px}
+table{border-collapse:collapse; width:100%; font-size:13.5px}
+th,td{padding:9px 13px; text-align:left; border-bottom:1px solid var(--line2); vertical-align:top}
+th{background:var(--pill-bg); font-weight:700; color:var(--ink); position:sticky; top:0}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--line2)}
+td code,th code{background:var(--code-bg);padding:1px 6px;border-radius:6px;font-size:12.5px}
+
+/* code blocks */
+.code{position:relative; margin:14px 0}
+.code pre{
+  margin:0; background:var(--code-bg); border:1px solid var(--line); border-radius:12px;
+  padding:15px 16px; overflow-x:auto; font-size:13px; line-height:1.55;
+}
+.code pre code{font-family:'JetBrains Mono','Fira Code',ui-monospace,SFMono-Regular,Menlo,monospace; background:none;color:var(--code-ink)}
+.code .copy{
+  position:absolute; top:8px; right:8px; border:1px solid var(--line); background:var(--panel);
+  color:var(--muted); border-radius:8px; padding:4px 9px; font-size:11.5px; cursor:pointer; opacity:0; transition:.15s
+}
+.code:hover .copy{opacity:1}
+.code .copy:hover{color:var(--accent);border-color:var(--accent)}
+.code .lang{position:absolute; top:8px; right:64px; font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; opacity:.7; pointer-events:none}
+code:not(pre code){background:var(--code-bg); padding:1.5px 6px; border-radius:6px; font-size:12.8px; font-family:'JetBrains Mono',ui-monospace,monospace; color:var(--accent)}
+kbd{background:var(--kbd);border-radius:6px;padding:1px 7px;font-size:12px;border:1px solid var(--line);font-family:monospace}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.pill{display:inline-block;background:var(--pill-bg);color:var(--accent);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;margin:2px}
+
+.toc-mini{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:16px 0}
+.toc-mini h4{margin:0 0 8px;color:var(--ink)}
+.toc-mini ul{margin:0;padding-left:18px;columns:2;font-size:13.5px}
+@media(max-width:700px){.toc-mini ul{columns:1}}
+
+.backtop{position:fixed;bottom:24px;right:24px;z-index:60;border-radius:50%;width:46px;height:46px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;
+  box-shadow:var(--shadow);font-size:18px;display:none}
+.backtop.show{display:block}
+mark{background:var(--accent4);color:#3a2d10;border-radius:3px;padding:0 2px}
+.muted{color:var(--muted)}
+.no-results{padding:14px;color:var(--muted);font-style:italic}
+hr{border:none;border-top:1px dashed var(--line);margin:26px 0}
+.footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+@media(max-width:860px){
+  .sidebar{display:none}
+  main{padding:22px 18px 100px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="logo">∑</span><span class="brand-txt">Big Book of Tech Exams</span></div>
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input id="search" type="text" placeholder="Search everything…  (press /)" autocomplete="off">
+  </div>
+  <div class="topbar-actions">
+    <button class="btn" id="expandAll" title="Expand/collapse nav">⊟ Sections</button>
+    <button class="btn" id="themeBtn" title="Toggle theme">🌙 Dark</button>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar"><!-- nav injected by JS --></nav>
+  <main id="main">
+
+  <div class="hero">
+    <h1>The Big Book of Technical Exams 📚</h1>
+    <p>A concept-first study guide for DS/ML interviews and data-engineering exams. Python, data structures, SQL &amp; ETL, math &amp; statistics, and machine learning — explained first, with code and formulas as illustration. Read it, don't just copy it.</p>
+    <div class="tags"><span>🐍 Python</span><span>🧱 Data Structures</span><span>🗄️ SQL &amp; ETL</span><span>📐 Math &amp; Stats</span><span>🤖 Machine Learning</span><span>🎯 Interview Prep</span></div>
+  </div>
+
+  <div class="note">
+    <b>How to use this book.</b> Each topic opens with the <i>idea</i> — what it is and when you'd reach for it — before any syntax. Try to recall or re-derive the answer before reading the code or formula. Use the search bar (or press <kbd>/</kbd>) to jump anywhere; <kbd>Esc</kbd> clears it. Collapse sections you've mastered. Everything renders offline-friendly except the highlight/MathJax CDNs.
+  </div>
+
+  <!-- ===================== SECTIONS INSERTED HERE ===================== -->
+
+  <!-- =========================================================
+       PYTHON
+  ========================================================== -->
+  <section data-group="sec-python">
+    <div class="section-band">
+      <span class="ico" style="background:linear-gradient(135deg,var(--accent),var(--accent2))">🐍</span>
+      <h2 id="py-overview">Python</h2>
+    </div>
+    <p class="lead">Python is dynamically typed and interpreted: names are just labels bound to objects, and an object carries its own type. Most of what you need for interviews is fluency with the built-in container types, comprehensions, and a handful of standard-library tools. The mental model to hold onto: <b>everything is an object</b>, variables are references, and "mutable vs immutable" decides whether an operation copies or modifies in place.</p>
+
+    <div class="toc-mini">
+      <h4>In this chapter</h4>
+      <ul>
+        <li><a href="#py-types">Core types &amp; the object model</a></li>
+        <li><a href="#py-numbers">Numbers &amp; operators</a></li>
+        <li><a href="#py-strings">Strings</a></li>
+        <li><a href="#py-lists">Lists</a></li>
+        <li><a href="#py-tuples">Tuples &amp; sequences</a></li>
+        <li><a href="#py-dicts">Dictionaries</a></li>
+        <li><a href="#py-sets">Sets</a></li>
+        <li><a href="#py-comprehensions">Comprehensions</a></li>
+        <li><a href="#py-control">Control flow</a></li>
+        <li><a href="#py-functions">Functions &amp; scope</a></li>
+        <li><a href="#py-oop">Classes &amp; OOP</a></li>
+        <li><a href="#py-iterators">Iterators &amp; generators</a></li>
+        <li><a href="#py-errors">Errors &amp; context managers</a></li>
+        <li><a href="#py-stdlib">Standard library toolbox</a></li>
+        <li><a href="#py-complexity">Built-in time complexity</a></li>
+        <li><a href="#py-gotchas">Interview gotchas</a></li>
+      </ul>
+    </div>
+
+    <h3 id="py-types">Core types &amp; the object model</h3>
+    <p>Every value is an object with an identity (<code>id()</code>), a type (<code>type()</code>), and a value. The single most exam-relevant distinction is <b>mutability</b>: immutable objects (<code>int, float, str, tuple, frozenset, bytes</code>) can never change — "modifying" one actually creates a new object — while mutable objects (<code>list, dict, set, bytearray</code>) can be changed in place. This is why passing a list into a function can change the caller's list, but passing an int cannot.</p>
+
+    <div class="tbl"><table>
+      <thead><tr><th>Type</th><th>Mutable?</th><th>Ordered?</th><th>Use it for</th></tr></thead>
+      <tbody>
+        <tr><td><code>int, float, complex, bool</code></td><td>No</td><td>—</td><td>Numbers; <code>bool</code> is a subclass of <code>int</code></td></tr>
+        <tr><td><code>str</code></td><td>No</td><td>Yes</td><td>Text, immutable sequence of characters</td></tr>
+        <tr><td><code>list</code></td><td>Yes</td><td>Yes</td><td>Ordered, growable sequence; the default workhorse</td></tr>
+        <tr><td><code>tuple</code></td><td>No</td><td>Yes</td><td>Fixed records; hashable so usable as dict keys</td></tr>
+        <tr><td><code>dict</code></td><td>Yes</td><td>Insertion-ordered (3.7+)</td><td>Key→value lookups in O(1)</td></tr>
+        <tr><td><code>set / frozenset</code></td><td>Yes / No</td><td>No</td><td>Membership tests, dedup, set algebra</td></tr>
+        <tr><td><code>NoneType</code></td><td>—</td><td>—</td><td>The sentinel "no value", singleton <code>None</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="key"><b>Identity vs equality.</b> <code>==</code> compares <i>values</i>; <code>is</code> compares <i>identity</i> (same object in memory). Use <code>is</code> only for singletons like <code>None</code>: write <code>if x is None</code>, never <code>if x == None</code>.</div>
+
+    <div class="code"><span class="lang">python</span><pre><code>x = [1, 2, 3]
+y = x              # y and x reference the SAME list
+y.append(4)
+print(x)           # [1, 2, 3, 4]  -- both changed
+z = x.copy()       # shallow copy -> independent top level
+import copy
+deep = copy.deepcopy(nested)   # copies nested objects too
+
+type(3)            # &lt;class 'int'&gt;
+isinstance(3, int) # True  (prefer over type(x) == int)
+id(x), id(y)       # same number; id(z) differs</code></pre></div>
+
+    <div class="note"><b>Truthiness.</b> Empty containers (<code>[] {} () "" set()</code>), <code>0</code>, <code>0.0</code>, and <code>None</code> are falsy; almost everything else is truthy. So <code>if items:</code> is the idiomatic "is this list non-empty?" check.</div>
+
+    <h3 id="py-numbers">Numbers &amp; operators</h3>
+    <p>Integers are arbitrary precision (no overflow), so factorials and big sums just work. Division always has two flavours you must keep straight: <code>/</code> is true division returning a float, <code>//</code> is floor division. Floats are IEEE-754 doubles, so equality comparisons are unreliable — compare with a tolerance instead.</p>
+    <div class="code"><span class="lang">python</span><pre><code>7 / 2      # 3.5   true division -> float
+7 // 2     # 3     floor division
+-7 // 2    # -4    floors toward negative infinity (not 0!)
+7 % 3      # 1     modulo; sign follows the divisor in Python
+2 ** 10    # 1024  exponent
+divmod(7, 3)        # (2, 1)  quotient and remainder together
+
+import math
+math.isclose(0.1 + 0.2, 0.3)   # True  -- never use == on floats
+round(2.675, 2)                # 2.67 (binary float surprise)
+abs(-5); math.floor(2.9); math.ceil(2.1); math.sqrt(16)
+float('inf'); float('nan')     # special values</code></pre></div>
+    <div class="tip"><b>Bit tricks for interviews.</b> <code>x &amp; 1</code> tests odd/even, <code>x &lt;&lt; n</code> multiplies by \(2^n\), <code>x &gt;&gt; n</code> divides, <code>x &amp; (x-1)</code> clears the lowest set bit (count bits / check power of two), <code>x ^ y</code> finds the single non-duplicated value in a list.</div>
+
+    <h3 id="py-strings">Strings</h3>
+    <p>Strings are immutable sequences, so every "edit" returns a new string. That immutability is why building a string in a loop with <code>+=</code> is quadratic — accumulate into a list and <code>"".join()</code> at the end instead. f-strings are the modern way to format and also support a debug <code>=</code> form and format specs.</p>
+    <div class="code"><span class="lang">python</span><pre><code>s = "Data Science"
+s.lower(); s.upper(); s.title(); s.strip()
+s.replace("Data", "Computer")
+s.split()              # ['Data', 'Science']   split on whitespace
+"a,b,c".split(",")     # ['a','b','c']
+",".join(["a","b"])    # 'a,b'   <-- preferred way to build strings
+s.startswith("Data"); s.endswith("ce"); "Sci" in s
+s.find("Sci")          # 5  (-1 if absent); .index raises if absent
+s[0]; s[-1]; s[:4]; s[::-1]   # indexing &amp; slicing (reverse!)
+
+name, score = "Ada", 0.97
+f"{name} scored {score:.1%}"   # 'Ada scored 97.0%'
+f"{score=}"                     # 'score=0.97'  debug form
+"  pad ".rjust(8); "x".zfill(3)  # '00x'
+ord('A'); chr(65)                # 65 ; 'A'</code></pre></div>
+    <div class="warn"><b>Common bug.</b> <code>str.replace</code>/<code>strip</code>/<code>sort</code>… do <i>not</i> mutate — they return a new value. <code>s.strip()</code> alone does nothing; you must write <code>s = s.strip()</code>.</div>
+
+    <h3 id="py-lists">Lists</h3>
+    <p>A list is a dynamic array: indexing and appending are O(1) amortized, but inserting or deleting at the front is O(n) because everything shifts. Know which methods mutate in place (and return <code>None</code>) versus which return a new object — mixing this up is the most common silent bug in interview code.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Operation</th><th>Effect</th><th>Cost</th></tr></thead>
+      <tbody>
+        <tr><td><code>a.append(x)</code></td><td>add to end (mutates)</td><td>O(1)*</td></tr>
+        <tr><td><code>a.pop()</code> / <code>a.pop(0)</code></td><td>remove last / first</td><td>O(1) / O(n)</td></tr>
+        <tr><td><code>a.insert(i, x)</code></td><td>insert at index</td><td>O(n)</td></tr>
+        <tr><td><code>a.remove(x)</code></td><td>delete first match by value</td><td>O(n)</td></tr>
+        <tr><td><code>a.sort()</code> / <code>sorted(a)</code></td><td>in-place / new sorted list</td><td>O(n log n)</td></tr>
+        <tr><td><code>x in a</code></td><td>membership scan</td><td>O(n)</td></tr>
+        <tr><td><code>a.reverse()</code> / <code>a[::-1]</code></td><td>in-place / new reversed</td><td>O(n)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><span class="lang">python</span><pre><code>a = [3, 1, 2]
+a.append(4); a.extend([5, 6]); a += [7]   # extend != append
+a.sort()                       # mutates, returns None
+b = sorted(a, reverse=True)    # new list
+a.sort(key=lambda x: -x)       # sort by a derived key
+nums = [(1,'b'), (2,'a')]
+nums.sort(key=lambda t: t[1])  # sort tuples by 2nd element
+
+# Slicing copies; assignment to a slice mutates
+a[1:3] = [99]                  # replace a range
+first, *middle, last = [1,2,3,4]   # 1, [2,3], 4  (unpacking)
+
+# DANGER: shared inner references
+grid = [[0]*3]*3               # all 3 rows are the SAME list!
+grid = [[0]*3 for _ in range(3)]   # correct independent rows</code></pre></div>
+    <div class="warn"><b>Mutable default arguments.</b> <code>def f(acc=[]):</code> reuses the <i>same</i> list across calls. Use <code>def f(acc=None): acc = acc or []</code> instead.</div>
+
+    <h3 id="py-tuples">Tuples &amp; sequence protocol</h3>
+    <p>Tuples are immutable lists, which makes them hashable — that's why they (not lists) can be dictionary keys or set members. They're also the natural type for returning multiple values and for fixed records. Named tuples and dataclasses give you readable field access without writing boilerplate.</p>
+    <div class="code"><span class="lang">python</span><pre><code>point = (3, 4)
+x, y = point                    # unpacking
+single = (5,)                   # one-element tuple needs the comma
+
+from collections import namedtuple
+Pt = namedtuple("Pt", "x y")
+p = Pt(3, 4); p.x; p.y          # readable, still immutable
+
+from dataclasses import dataclass
+@dataclass
+class User:
+    name: str
+    age: int = 0                # auto __init__, __repr__, __eq__
+</code></pre></div>
+
+    <h3 id="py-dicts">Dictionaries</h3>
+    <p>The dict is Python's hash table and your go-to for O(1) lookups, counting, grouping, caching, and adjacency lists. Since 3.7 it preserves insertion order. The key skills: safe access that won't raise, and the counting/grouping idioms that appear in almost every data interview.</p>
+    <div class="code"><span class="lang">python</span><pre><code>d = {"a": 1, "b": 2}
+d["c"] = 3                      # insert / update
+d.get("z", 0)                   # 0 if missing -- no KeyError
+d.setdefault("a", 99)           # returns 1; only sets if absent
+d.pop("a", None); del d["b"]
+"a" in d                        # key membership, O(1)
+d.keys(); d.values(); d.items() # views
+for k, v in d.items(): ...
+{**d1, **d2}                    # merge (d2 wins);  d1 | d2 in 3.9+
+
+# Counting &amp; grouping -- memorize these
+from collections import Counter, defaultdict
+Counter("mississippi").most_common(2)   # [('i',4),('s',4)]
+groups = defaultdict(list)
+for word in words:
+    groups[len(word)].append(word)       # auto-creates the list
+
+# Dict comprehension &amp; inversion
+squares = {n: n*n for n in range(5)}
+inv = {v: k for k, v in d.items()}</code></pre></div>
+    <div class="tip"><b>Counter is a multiset.</b> It supports <code>+ - &amp; |</code> between counters and <code>.most_common()</code>, making "top-k frequent" a two-liner.</div>
+
+    <h3 id="py-sets">Sets</h3>
+    <p>Sets give O(1) membership and automatic deduplication, plus the algebra of union/intersection/difference. Whenever a problem says "have I seen this before?" or "what's common between these?", a set is usually the answer and often turns an O(n²) scan into O(n).</p>
+    <div class="code"><span class="lang">python</span><pre><code>s = {1, 2, 3}; empty = set()    # {} is an empty DICT, not a set
+s.add(4); s.discard(9)          # discard won't raise; remove will
+2 in s                          # O(1) membership
+a, b = {1,2,3}, {2,3,4}
+a | b      # union {1,2,3,4}
+a &amp; b      # intersection {2,3}
+a - b      # difference {1}
+a ^ b      # symmetric difference {1,4}
+a &lt;= b     # subset test
+unique = set(my_list)           # dedup in one call
+frozenset({1,2})                # immutable -> hashable</code></pre></div>
+
+    <h3 id="py-comprehensions">Comprehensions &amp; functional tools</h3>
+    <p>Comprehensions are the Pythonic replacement for building a collection with a loop: they're faster and read as "what I want, for each item, where condition". The same syntax produces lists, sets, dicts, and (with parentheses) lazy generators. Pair them with <code>map/filter/zip/enumerate</code> and you can express most transforms in one line.</p>
+    <div class="code"><span class="lang">python</span><pre><code>[x*x for x in range(10) if x % 2 == 0]        # list
+{x % 3 for x in range(10)}                    # set
+{x: x*x for x in range(5)}                    # dict
+(x*x for x in range(10**9))                   # generator: lazy, O(1) memory
+[[r*c for c in range(3)] for r in range(3)]   # nested / 2D
+[y for row in matrix for y in row]            # flatten (order = nested loops)
+[a if a &gt; 0 else 0 for a in vals]             # ternary inside
+
+# Iteration helpers
+for i, v in enumerate(seq, start=1): ...      # index + value
+for a, b in zip(xs, ys): ...                  # parallel iterate
+list(zip(*matrix))                            # transpose!
+from itertools import product, combinations, permutations, accumulate, chain, groupby
+list(combinations([1,2,3], 2))                # [(1,2),(1,3),(2,3)]
+list(accumulate([1,2,3,4]))                   # running sum [1,3,6,10]</code></pre></div>
+
+    <h3 id="py-control">Control flow</h3>
+    <p>Beyond the usual <code>if/elif/else</code> and loops, two features matter for clean exam code: the <code>for…else</code> clause (the <code>else</code> runs only if the loop finished without <code>break</code> — handy for search loops), and structural pattern matching (<code>match/case</code>, 3.10+) for dispatching on shape.</p>
+    <div class="code"><span class="lang">python</span><pre><code>for n in nums:
+    if n &lt; 0:
+        break
+else:
+    print("no negatives found")     # runs only if no break
+
+while queue:
+    node = queue.pop()
+    ...
+
+# match/case (3.10+): destructure by shape
+match command.split():
+    case ["go", direction]:   move(direction)
+    case ["quit"]:            stop()
+    case _:                   print("unknown")
+
+value = "pos" if x &gt; 0 else "neg"   # ternary expression</code></pre></div>
+
+    <h3 id="py-functions">Functions, scope &amp; arguments</h3>
+    <p>Functions are first-class objects: you can pass them around, return them, and store them. Master the argument forms — positional, keyword, defaults, <code>*args</code>, <code>**kwargs</code> — and the LEGB scope rule (Local → Enclosing → Global → Built-in) that decides which name a lookup finds. Closures capture enclosing variables by reference, which is the basis of decorators.</p>
+    <div class="code"><span class="lang">python</span><pre><code>def f(a, b=10, *args, key=None, **kwargs):
+    # a: required, b: default, args: extra positionals (tuple),
+    # key: keyword-only, kwargs: extra keywords (dict)
+    return a + b
+
+f(1, 2, 3, key="x", z=9)
+nums = [1, 2, 3]
+print(*nums)                 # unpack into positionals -> 1 2 3
+f(**{"a": 1, "b": 2})        # unpack dict into keywords
+
+# Closures &amp; decorators
+def timer(fn):
+    import functools, time
+    @functools.wraps(fn)
+    def wrapper(*a, **k):
+        t = time.perf_counter(); r = fn(*a, **k)
+        print(f"{fn.__name__}: {time.perf_counter()-t:.4f}s")
+        return r
+    return wrapper
+
+@timer
+def slow(): ...              # slow = timer(slow)
+
+square = lambda x: x*x       # anonymous function
+sorted(data, key=lambda r: (r.age, r.name))   # multi-key sort</code></pre></div>
+    <div class="note"><b>LEGB &amp; <code>global</code>/<code>nonlocal</code>.</b> Assigning to a name inside a function makes it local unless you declare <code>global x</code> (module scope) or <code>nonlocal x</code> (enclosing function). Reading without assigning falls through the LEGB chain.</div>
+
+    <h3 id="py-oop">Classes &amp; OOP</h3>
+    <p>A class bundles state (attributes) with behaviour (methods). Instance methods take <code>self</code>; <code>__init__</code> is the constructor; dunder methods let your objects behave like built-ins (<code>__len__</code>, <code>__eq__</code>, <code>__repr__</code>, <code>__lt__</code> for sorting). The four OOP pillars — encapsulation, inheritance, polymorphism, abstraction — show up as conceptual interview questions, so connect each to a concrete Python feature.</p>
+    <div class="code"><span class="lang">python</span><pre><code>class Animal:
+    species = "unknown"               # class attribute (shared)
+    def __init__(self, name):
+        self.name = name              # instance attribute
+    def speak(self):                  # to be overridden
+        raise NotImplementedError
+    def __repr__(self):
+        return f"Animal({self.name!r})"
+
+class Dog(Animal):                    # inheritance
+    species = "dog"
+    def speak(self):                  # polymorphism / override
+        return "Woof"
+    def fetch(self):
+        return f"{self.name} fetches"
+
+d = Dog("Rex")
+d.speak(); isinstance(d, Animal)      # True
+super()      # call parent method inside an override
+
+class Circle:
+    def __init__(self, r): self._r = r
+    @property                         # computed read-only attribute
+    def area(self): return 3.14159 * self._r**2
+    @staticmethod
+    def unit(): return Circle(1)      # no self/cls
+    @classmethod
+    def from_diameter(cls, d): return cls(d/2)   # alt constructor</code></pre></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Pillar</th><th>Idea</th><th>In Python</th></tr></thead>
+      <tbody>
+        <tr><td>Encapsulation</td><td>Bundle data + methods, hide internals</td><td><code>_protected</code>, <code>__private</code> name-mangling, <code>@property</code></td></tr>
+        <tr><td>Inheritance</td><td>Reuse &amp; specialize a base class</td><td><code>class Child(Parent)</code>, <code>super()</code></td></tr>
+        <tr><td>Polymorphism</td><td>Same call, type-specific behaviour</td><td>Method override, duck typing</td></tr>
+        <tr><td>Abstraction</td><td>Expose intent, hide complexity</td><td><code>abc.ABC</code>, <code>@abstractmethod</code></td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 id="py-iterators">Iterators &amp; generators</h3>
+    <p>Iteration is a protocol: an <i>iterable</i> can produce an <i>iterator</i> via <code>iter()</code>, and an iterator yields items via <code>next()</code> until it raises <code>StopIteration</code>. Generators (functions with <code>yield</code>) build iterators lazily — they produce values on demand, so you can stream gigabytes or model infinite sequences in constant memory. This laziness is the key to scalable ETL in pure Python.</p>
+    <div class="code"><span class="lang">python</span><pre><code>def countdown(n):
+    while n &gt; 0:
+        yield n            # pauses here, resumes on next()
+        n -= 1
+
+for x in countdown(3): print(x)     # 3 2 1
+gen = (line.strip() for line in open("big.csv"))   # streams, O(1) memory
+
+import itertools as it
+it.islice(gen, 10)         # take first 10 without loading all
+it.chain(a, b)             # concatenate iterables lazily
+next(iter(d))              # first key of a dict</code></pre></div>
+    <div class="tip"><b>Why it matters for data engineering.</b> Reading a file with a generator processes one row at a time instead of loading the whole file — the difference between a pipeline that scales and one that OOMs.</div>
+
+    <h3 id="py-errors">Errors, exceptions &amp; context managers</h3>
+    <p>Python prefers "easier to ask forgiveness than permission" (EAFP): try the operation and catch the specific exception, rather than checking every precondition first. Catch the narrowest exception you can, use <code>finally</code> for cleanup, and prefer <code>with</code> blocks (context managers) so resources like files and locks are released automatically even on error.</p>
+    <div class="code"><span class="lang">python</span><pre><code>try:
+    val = int(user_input)
+except ValueError as e:
+    print("not a number:", e)
+except (KeyError, IndexError):
+    ...
+else:
+    print("ok:", val)        # runs only if no exception
+finally:
+    cleanup()                # always runs
+
+raise ValueError("bad input")          # raise your own
+assert x &gt; 0, "x must be positive"     # debugging checks
+
+with open("data.csv") as f:            # auto-closes the file
+    data = f.read()
+
+from contextlib import contextmanager
+@contextmanager
+def timer():
+    import time; t=time.perf_counter()
+    yield
+    print(time.perf_counter()-t)</code></pre></div>
+
+    <h3 id="py-stdlib">Standard library toolbox</h3>
+    <p>Interviewers love when you reach for the right batteries-included tool instead of reinventing it. These are the modules worth memorizing for data/ML work.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Module</th><th>Reach for it when…</th><th>Key names</th></tr></thead>
+      <tbody>
+        <tr><td><code>collections</code></td><td>Counting, grouping, queues, default values</td><td><code>Counter, defaultdict, deque, OrderedDict, namedtuple</code></td></tr>
+        <tr><td><code>itertools</code></td><td>Combinatorics &amp; lazy iteration</td><td><code>product, combinations, permutations, groupby, accumulate, chain</code></td></tr>
+        <tr><td><code>heapq</code></td><td>Priority queue / top-k / streaming min</td><td><code>heappush, heappop, nlargest, nsmallest</code></td></tr>
+        <tr><td><code>bisect</code></td><td>Keep a list sorted / binary search</td><td><code>bisect_left, insort</code></td></tr>
+        <tr><td><code>functools</code></td><td>Caching, partials, reduce, decorators</td><td><code>lru_cache, cache, reduce, partial, wraps</code></td></tr>
+        <tr><td><code>math</code> / <code>statistics</code></td><td>Numeric helpers, quick stats</td><td><code>gcd, comb, log, inf</code>; <code>mean, median, stdev</code></td></tr>
+        <tr><td><code>re</code></td><td>Pattern matching in text</td><td><code>findall, sub, match, search, compile</code></td></tr>
+        <tr><td><code>datetime</code></td><td>Dates, durations, parsing</td><td><code>datetime, timedelta, strptime, strftime</code></td></tr>
+        <tr><td><code>json</code> / <code>csv</code></td><td>Serialization &amp; flat-file I/O</td><td><code>loads, dumps; reader, DictReader</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><span class="lang">python</span><pre><code>from functools import lru_cache
+@lru_cache(maxsize=None)         # memoize -> turns exp. recursion linear
+def fib(n): return n if n &lt; 2 else fib(n-1) + fib(n-2)
+
+from collections import deque
+q = deque([1,2,3]); q.appendleft(0); q.pop(); q.popleft()  # O(1) both ends
+
+import heapq
+heap = []; heapq.heappush(heap, (priority, item))
+smallest = heapq.heappop(heap)
+heapq.nlargest(3, data, key=len)
+
+import re
+re.findall(r"\d+", "a1b22c")     # ['1','22']
+re.sub(r"\s+", " ", messy)        # collapse whitespace</code></pre></div>
+
+    <h3 id="py-complexity">Built-in operation complexity (cheat table)</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Structure</th><th>Access / Search</th><th>Insert</th><th>Delete</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><b>list</b></td><td>idx O(1) / search O(n)</td><td>append O(1)*, insert O(n)</td><td>pop end O(1), else O(n)</td><td>contiguous array</td></tr>
+        <tr><td><b>dict</b></td><td>O(1) avg</td><td>O(1) avg</td><td>O(1) avg</td><td>hash table</td></tr>
+        <tr><td><b>set</b></td><td>O(1) avg</td><td>O(1) avg</td><td>O(1) avg</td><td>hash table</td></tr>
+        <tr><td><b>deque</b></td><td>ends O(1), middle O(n)</td><td>both ends O(1)</td><td>both ends O(1)</td><td>doubly linked</td></tr>
+        <tr><td><b>str / tuple</b></td><td>idx O(1) / search O(n)</td><td>immutable</td><td>immutable</td><td>concat builds new</td></tr>
+        <tr><td><b>heapq</b></td><td>peek min O(1)</td><td>push O(log n)</td><td>pop O(log n)</td><td>binary heap on a list</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">* amortized — occasional resize costs O(n) but averages to O(1).</p>
+
+    <h3 id="py-gotchas">Interview gotchas &amp; idioms</h3>
+    <div class="grid2">
+      <div class="warn"><b>Mutable defaults</b> persist across calls. Use <code>None</code> sentinels.</div>
+      <div class="warn"><b><code>[[0]*n]*m</code></b> makes shared rows. Use a comprehension.</div>
+      <div class="warn"><b><code>is</code> vs <code>==</code></b>: <code>is</code> only for <code>None</code>/singletons.</div>
+      <div class="warn"><b>Float equality</b>: use <code>math.isclose</code>, never <code>==</code>.</div>
+      <div class="warn"><b>Late-binding closures</b> in loops capture the variable, not its value — bind with a default arg.</div>
+      <div class="warn"><b>Modifying a list while iterating</b> skips elements — iterate a copy or build a new list.</div>
+    </div>
+    <div class="key"><b>One-liners worth memorizing.</b> <code>sorted(d, key=d.get)</code> (keys by value), <code>max(counts, key=counts.get)</code> (mode), <code>list(zip(*m))</code> (transpose), <code>{**a, **b}</code> (merge dicts), <code>"".join(reversed(s))</code> (reverse string), <code>any()/all()</code> for quantifiers, <code>sum(c==t for c in s)</code> (count by predicate).</div>
+  </section>
+
+  <!-- =========================================================
+       DATA STRUCTURES & ALGORITHMS
+  ========================================================== -->
+  <section data-group="sec-dsa">
+    <div class="section-band">
+      <span class="ico" style="background:linear-gradient(135deg,var(--accent2),var(--accent4))">🧱</span>
+      <h2 id="dsa-overview">Data Structures &amp; Algorithms</h2>
+    </div>
+    <p class="lead">Interview coding rounds are really asking one question: <i>can you pick the data structure that makes the operation you need cheap?</i> The whole game is matching an access pattern (lookup, ordering, range, priority, prefix) to the structure whose cost for that pattern is low, then expressing the standard algorithm cleanly. Start every problem by asking what you're optimizing and what the brute force costs.</p>
+
+    <div class="toc-mini">
+      <h4>In this chapter</h4>
+      <ul>
+        <li><a href="#dsa-bigo">Big-O &amp; complexity</a></li>
+        <li><a href="#dsa-array">Arrays &amp; two pointers</a></li>
+        <li><a href="#dsa-hash">Hash maps &amp; sets</a></li>
+        <li><a href="#dsa-stackqueue">Stacks &amp; queues</a></li>
+        <li><a href="#dsa-linked">Linked lists</a></li>
+        <li><a href="#dsa-heap">Heaps / priority queues</a></li>
+        <li><a href="#dsa-tree">Trees &amp; BSTs</a></li>
+        <li><a href="#dsa-graph">Graphs: BFS/DFS</a></li>
+        <li><a href="#dsa-sort">Sorting &amp; searching</a></li>
+        <li><a href="#dsa-recursion">Recursion &amp; backtracking</a></li>
+        <li><a href="#dsa-dp">Dynamic programming</a></li>
+        <li><a href="#dsa-patterns">Pattern → technique map</a></li>
+      </ul>
+    </div>
+
+    <h3 id="dsa-bigo">Big-O &amp; complexity analysis</h3>
+    <p>Big-O describes how runtime or memory <i>grows</i> as input \(n\) grows, ignoring constants and lower-order terms — it answers "will this still work when the data is 100× bigger?". You analyse the worst case unless told otherwise. The hierarchy below is worth knowing cold, because naming the complexity of your solution (and the brute force you improved on) is half of what's being scored.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Notation</th><th>Name</th><th>Example</th><th>n=10⁶ feels like</th></tr></thead>
+      <tbody>
+        <tr><td>\(O(1)\)</td><td>constant</td><td>dict/array index, hash lookup</td><td>instant</td></tr>
+        <tr><td>\(O(\log n)\)</td><td>logarithmic</td><td>binary search, balanced-tree op</td><td>~20 steps</td></tr>
+        <tr><td>\(O(n)\)</td><td>linear</td><td>single scan, one pass</td><td>fine</td></tr>
+        <tr><td>\(O(n \log n)\)</td><td>linearithmic</td><td>good sorts, heap-based</td><td>fine</td></tr>
+        <tr><td>\(O(n^2)\)</td><td>quadratic</td><td>nested loops, naive pair scan</td><td>slow (~10¹²)</td></tr>
+        <tr><td>\(O(2^n)\), \(O(n!)\)</td><td>exponential / factorial</td><td>subsets, permutations, brute force</td><td>hopeless past n≈25</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><b>Amortized vs worst case.</b> A <code>list.append</code> is O(1) <i>amortized</i>: most appends are cheap, and the rare resize that copies everything averages out. Always also state <b>space</b> complexity (extra memory), including the recursion stack — a recursion of depth \(n\) uses \(O(n)\) space even if it allocates nothing.</div>
+
+    <h3 id="dsa-array">Arrays &amp; the two-pointer / sliding-window family</h3>
+    <p>When data is a sequence and you'd otherwise compare every pair (O(n²)), two pointers or a sliding window usually collapse it to O(n). <b>Two pointers</b> walk inward from both ends (works on sorted data: pair-sum, palindrome) or at different speeds. A <b>sliding window</b> expands a right edge and shrinks a left edge to maintain a constraint over contiguous subarrays. A <b>prefix sum</b> precomputes cumulative totals so any range sum is an O(1) subtraction.</p>
+    <div class="code"><span class="lang">python</span><pre><code># Two pointers: pair summing to target in a SORTED array
+def two_sum_sorted(a, target):
+    i, j = 0, len(a) - 1
+    while i &lt; j:
+        s = a[i] + a[j]
+        if s == target: return (i, j)
+        if s &lt; target:   i += 1     # need bigger -> move left up
+        else:            j -= 1     # need smaller -> move right down
+    return None
+
+# Sliding window: longest substring without repeats
+def longest_unique(s):
+    seen, left, best = {}, 0, 0
+    for right, ch in enumerate(s):
+        if ch in seen and seen[ch] &gt;= left:
+            left = seen[ch] + 1     # shrink window past the repeat
+        seen[ch] = right
+        best = max(best, right - left + 1)
+    return best
+
+# Prefix sums: range sum in O(1) after O(n) build
+pre = [0]
+for x in a: pre.append(pre[-1] + x)
+range_sum = pre[r+1] - pre[l]       # sum of a[l..r]</code></pre></div>
+
+    <h3 id="dsa-hash">Hash maps &amp; sets — the O(1) trade</h3>
+    <p>A hash table trades memory for speed: it spends O(n) extra space to turn "have I seen this / what's paired with this" from an O(n) scan into an O(1) lookup. The classic move is one pass that remembers what you've seen so the answer is ready when you reach its partner — this is how Two Sum drops from O(n²) to O(n).</p>
+    <div class="code"><span class="lang">python</span><pre><code># Two Sum, unsorted, O(n): remember complements as you go
+def two_sum(nums, target):
+    seen = {}                       # value -&gt; index
+    for i, x in enumerate(nums):
+        if target - x in seen:
+            return (seen[target - x], i)
+        seen[x] = i
+
+# Group anagrams: sorted letters as a hashable key
+from collections import defaultdict
+groups = defaultdict(list)
+for w in words:
+    groups[tuple(sorted(w))].append(w)</code></pre></div>
+    <div class="tip"><b>Heuristic:</b> if you catch yourself writing a nested loop to find a relationship between elements, ask whether a hash map can remember the inner loop's work instead.</div>
+
+    <h3 id="dsa-stackqueue">Stacks &amp; queues</h3>
+    <p>A <b>stack</b> is LIFO (last in, first out) — the right model for nesting, matching, undo, and DFS. A <b>queue</b> is FIFO (first in, first out) — the model for level-order/BFS and scheduling. In Python a list is a fine stack (<code>append</code>/<code>pop</code>), but for a queue use <code>collections.deque</code> so popping the front is O(1) instead of O(n).</p>
+    <div class="code"><span class="lang">python</span><pre><code># Stack: valid parentheses
+def valid(s):
+    pairs = {')':'(', ']':'[', '}':'{'}
+    stack = []
+    for ch in s:
+        if ch in "([{": stack.append(ch)
+        elif not stack or stack.pop() != pairs[ch]:
+            return False
+    return not stack
+
+# Monotonic stack: next greater element (O(n))
+def next_greater(a):
+    res, stack = [-1]*len(a), []
+    for i, x in enumerate(a):
+        while stack and a[stack[-1]] &lt; x:
+            res[stack.pop()] = x
+        stack.append(i)
+    return res
+
+from collections import deque
+q = deque(); q.append(x); q.popleft()   # O(1) FIFO queue</code></pre></div>
+
+    <h3 id="dsa-linked">Linked lists</h3>
+    <p>A linked list stores each value in a node that points to the next, so inserting or deleting given a node is O(1) — but there's no random access, so reaching the k-th element is O(n). Interview value is mostly in pointer manipulation: reversing, detecting cycles with fast/slow pointers (Floyd's), and finding the middle in one pass.</p>
+    <div class="code"><span class="lang">python</span><pre><code>class Node:
+    def __init__(self, val, nxt=None): self.val, self.next = val, nxt
+
+def reverse(head):                  # iterative reversal, O(n)/O(1)
+    prev = None
+    while head:
+        head.next, prev, head = prev, head, head.next
+    return prev
+
+def has_cycle(head):                # Floyd's tortoise &amp; hare
+    slow = fast = head
+    while fast and fast.next:
+        slow, fast = slow.next, fast.next.next
+        if slow is fast: return True
+    return False</code></pre></div>
+
+    <h3 id="dsa-heap">Heaps / priority queues</h3>
+    <p>A binary heap keeps the smallest (or largest) element instantly available while supporting O(log n) insert and remove — perfect when you repeatedly need "the next best" item: top-k, merging sorted streams, Dijkstra, scheduling, running medians. Python's <code>heapq</code> is a min-heap on a plain list; negate values (or use tuples) for a max-heap.</p>
+    <div class="code"><span class="lang">python</span><pre><code>import heapq
+# Top-k largest with a size-k MIN-heap -> O(n log k), O(k) space
+def top_k(nums, k):
+    heap = []
+    for x in nums:
+        heapq.heappush(heap, x)
+        if len(heap) &gt; k: heapq.heappop(heap)   # drop the smallest
+    return heap
+heapq.nlargest(k, nums)             # built-in shortcut
+
+# Max-heap via negation
+maxheap = []; heapq.heappush(maxheap, -x); top = -heapq.heappop(maxheap)</code></pre></div>
+    <div class="key"><b>Top-k rule of thumb.</b> For the k largest, keep a <i>min</i>-heap of size k (its root is the weakest survivor to evict). For the k smallest, keep a <i>max</i>-heap of size k. This is O(n log k), beating a full O(n log n) sort when k ≪ n.</div>
+
+    <h3 id="dsa-tree">Trees &amp; binary search trees</h3>
+    <p>Trees model hierarchy. A <b>binary search tree</b> keeps left &lt; node &lt; right, giving O(log n) search/insert/delete <i>when balanced</i> (and O(n) when degenerate into a list). The three depth-first traversals differ only in <i>when</i> you visit the node relative to its children — and <b>in-order traversal of a BST yields sorted order</b>, a fact interviewers test constantly.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Traversal</th><th>Order</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td>In-order</td><td>Left → Node → Right</td><td>Sorted output of a BST</td></tr>
+        <tr><td>Pre-order</td><td>Node → Left → Right</td><td>Copy/serialize a tree</td></tr>
+        <tr><td>Post-order</td><td>Left → Right → Node</td><td>Delete tree, evaluate expressions</td></tr>
+        <tr><td>Level-order (BFS)</td><td>Top to bottom, left to right</td><td>Shortest depth, per-level work</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><span class="lang">python</span><pre><code>class TreeNode:
+    def __init__(self, val, left=None, right=None):
+        self.val, self.left, self.right = val, left, right
+
+def inorder(node, out):             # sorted for a BST
+    if node:
+        inorder(node.left, out)
+        out.append(node.val)
+        inorder(node.right, out)
+
+def max_depth(node):                # height of a tree
+    if not node: return 0
+    return 1 + max(max_depth(node.left), max_depth(node.right))
+
+from collections import deque
+def level_order(root):              # BFS by levels
+    if not root: return []
+    q, res = deque([root]), []
+    while q:
+        level = []
+        for _ in range(len(q)):     # fix the level boundary
+            n = q.popleft(); level.append(n.val)
+            if n.left:  q.append(n.left)
+            if n.right: q.append(n.right)
+        res.append(level)
+    return res</code></pre></div>
+
+    <h3 id="dsa-graph">Graphs: BFS &amp; DFS</h3>
+    <p>A graph is nodes plus edges; represent it as an <b>adjacency list</b> (<code>dict</code> of neighbours) for sparse graphs. <b>BFS</b> explores level by level with a queue and finds the shortest path in an unweighted graph; <b>DFS</b> dives deep with a stack/recursion and suits cycle detection, topological sort, and connected components. The one non-negotiable: track <code>visited</code> or you'll loop forever.</p>
+    <div class="code"><span class="lang">python</span><pre><code>from collections import deque
+graph = {0:[1,2], 1:[2], 2:[0,3], 3:[]}   # adjacency list
+
+def bfs(start):                     # shortest hops, unweighted
+    seen, q = {start}, deque([start])
+    while q:
+        node = q.popleft()
+        for nb in graph[node]:
+            if nb not in seen:
+                seen.add(nb); q.append(nb)
+    return seen
+
+def dfs(node, seen=None):
+    seen = seen or set()
+    seen.add(node)
+    for nb in graph[node]:
+        if nb not in seen: dfs(nb, seen)
+    return seen
+
+# Grid problems: treat each cell as a node, 4-directional neighbours
+DIRS = [(1,0),(-1,0),(0,1),(0,-1)]</code></pre></div>
+    <div class="note"><b>Weighted shortest paths.</b> BFS only works when every edge costs the same. With positive weights use <b>Dijkstra</b> (a heap-driven BFS); with possible negative edges use <b>Bellman-Ford</b>; for all-pairs use <b>Floyd-Warshall</b>.</div>
+
+    <h3 id="dsa-sort">Sorting &amp; searching</h3>
+    <p>You rarely implement a sort in an interview — Python's <code>sorted</code> (Timsort) is O(n log n) and stable — but you must know the trade-offs and why O(n log n) is the comparison-sort lower bound. The bigger lever is <b>binary search</b>: on any sorted (or monotonic) space it finds the answer in O(log n) by halving the search range, and "binary search on the answer" solves many optimization problems.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Algorithm</th><th>Average</th><th>Worst</th><th>Space</th><th>Stable?</th></tr></thead>
+      <tbody>
+        <tr><td>Quicksort</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n)</td><td>No</td></tr>
+        <tr><td>Mergesort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td><td>Yes</td></tr>
+        <tr><td>Heapsort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td><td>No</td></tr>
+        <tr><td>Timsort (Python)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td><td>Yes</td></tr>
+        <tr><td>Counting/Radix</td><td>O(n + k)</td><td>O(n + k)</td><td>O(n + k)</td><td>Yes</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><span class="lang">python</span><pre><code>def binary_search(a, target):       # a is sorted; O(log n)
+    lo, hi = 0, len(a) - 1
+    while lo &lt;= hi:
+        mid = (lo + hi) // 2
+        if a[mid] == target: return mid
+        if a[mid] &lt; target:  lo = mid + 1
+        else:                hi = mid - 1
+    return -1
+
+import bisect
+bisect.bisect_left(a, x)            # leftmost insert position
+bisect.insort(a, x)                 # insert keeping sorted, O(n)</code></pre></div>
+
+    <h3 id="dsa-recursion">Recursion &amp; backtracking</h3>
+    <p>Recursion solves a problem by reducing it to smaller instances of itself; every recursion needs a <b>base case</b> (when to stop) and a <b>recursive case</b> that moves toward it. <b>Backtracking</b> is recursion that builds a candidate incrementally and abandons ("prunes") a branch the moment it can't lead to a valid solution — the standard tool for permutations, combinations, subsets, N-queens, and Sudoku.</p>
+    <div class="code"><span class="lang">python</span><pre><code># Backtracking template: all subsets
+def subsets(nums):
+    res = []
+    def backtrack(start, path):
+        res.append(path[:])             # record current choice
+        for i in range(start, len(nums)):
+            path.append(nums[i])        # choose
+            backtrack(i + 1, path)      # explore
+            path.pop()                  # un-choose (backtrack)
+    backtrack(0, [])
+    return res</code></pre></div>
+    <div class="warn"><b>Stack limit.</b> Python caps recursion (~1000 deep). For deep/linear recursion convert to iteration with an explicit stack, or raise <code>sys.setrecursionlimit</code> cautiously.</div>
+
+    <h3 id="dsa-dp">Dynamic programming</h3>
+    <p>DP applies when a problem has <b>overlapping subproblems</b> (the same smaller question recurs) and <b>optimal substructure</b> (the best overall answer is built from best sub-answers). You either <b>memoize</b> top-down (recursion + cache) or build a table <b>bottom-up</b>. The hard part is defining the state and recurrence; once you can write "let <code>dp[i]</code> = the answer for the first i items", the transition usually follows.</p>
+    <div class="code"><span class="lang">python</span><pre><code># Top-down memoization (fib): exponential -&gt; O(n)
+from functools import lru_cache
+@lru_cache(None)
+def fib(n): return n if n &lt; 2 else fib(n-1) + fib(n-2)
+
+# Bottom-up table: climbing stairs (= fib in disguise)
+def climb(n):
+    dp = [0]*(n+1); dp[0] = dp[1] = 1
+    for i in range(2, n+1):
+        dp[i] = dp[i-1] + dp[i-2]       # reach i from i-1 or i-2
+    return dp[n]
+
+# 0/1 knapsack: dp[w] = best value within capacity w
+def knapsack(weights, values, cap):
+    dp = [0]*(cap+1)
+    for wt, val in zip(weights, values):
+        for w in range(cap, wt-1, -1):  # iterate DOWN for 0/1
+            dp[w] = max(dp[w], dp[w-wt] + val)
+    return dp[cap]</code></pre></div>
+    <div class="tip"><b>Spotting DP.</b> Phrases like "count the number of ways", "minimum/maximum cost to", or "can you reach" over choices usually signal DP. First write the brute-force recursion, then add a cache — that <i>is</i> top-down DP.</div>
+
+    <h3 id="dsa-patterns">Pattern → technique map</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>If the problem says…</th><th>Reach for</th><th>Target cost</th></tr></thead>
+      <tbody>
+        <tr><td>"have I seen / what pairs with"</td><td>Hash map / set</td><td>O(n)</td></tr>
+        <tr><td>sorted array, pair/triple sum, palindrome</td><td>Two pointers</td><td>O(n)</td></tr>
+        <tr><td>longest/at-most contiguous subarray</td><td>Sliding window</td><td>O(n)</td></tr>
+        <tr><td>range sums queried repeatedly</td><td>Prefix sums</td><td>O(1) per query</td></tr>
+        <tr><td>top-k / k-th / running min</td><td>Heap</td><td>O(n log k)</td></tr>
+        <tr><td>sorted/monotonic, find threshold</td><td>Binary search</td><td>O(log n)</td></tr>
+        <tr><td>shortest path, unweighted</td><td>BFS</td><td>O(V+E)</td></tr>
+        <tr><td>connectivity / cycles / topo order</td><td>DFS / union-find</td><td>O(V+E)</td></tr>
+        <tr><td>all combinations/permutations/subsets</td><td>Backtracking</td><td>exponential (pruned)</td></tr>
+        <tr><td>count ways / min cost over choices</td><td>Dynamic programming</td><td>O(states × transitions)</td></tr>
+        <tr><td>next greater/smaller element</td><td>Monotonic stack</td><td>O(n)</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- =========================================================
+       SQL & ETL
+  ========================================================== -->
+  <section data-group="sec-sql">
+    <div class="section-band">
+      <span class="ico" style="background:linear-gradient(135deg,var(--accent3),var(--accent))">🗄️</span>
+      <h2 id="sql-overview">SQL &amp; ETL</h2>
+    </div>
+    <p class="lead">SQL is declarative: you describe the result you want and the engine figures out how to get it. The key to fluency is internalizing the <b>logical order of evaluation</b> — it's not the order you write the clauses — because that order explains why <code>WHERE</code> can't see an alias, why <code>HAVING</code> exists, and what a window function can reference. For data engineering, layer on joins, window functions, and the ETL/ELT mindset of moving and shaping data reliably.</p>
+
+    <div class="toc-mini">
+      <h4>In this chapter</h4>
+      <ul>
+        <li><a href="#sql-order">Order of execution</a></li>
+        <li><a href="#sql-select">SELECT &amp; filtering</a></li>
+        <li><a href="#sql-joins">Joins</a></li>
+        <li><a href="#sql-agg">Aggregation &amp; GROUP BY</a></li>
+        <li><a href="#sql-window">Window functions</a></li>
+        <li><a href="#sql-cte">CTEs &amp; subqueries</a></li>
+        <li><a href="#sql-cond">Conditionals &amp; NULLs</a></li>
+        <li><a href="#sql-perf">Indexes &amp; performance</a></li>
+        <li><a href="#sql-modeling">Data modeling</a></li>
+        <li><a href="#sql-etl">ETL vs ELT &amp; pipelines</a></li>
+        <li><a href="#sql-patterns">Common query patterns</a></li>
+      </ul>
+    </div>
+
+    <h3 id="sql-order">The logical order of execution</h3>
+    <p>You write <code>SELECT</code> first, but the engine evaluates it nearly last. This single table explains most SQL "why doesn't this work" questions: column aliases defined in <code>SELECT</code> aren't visible to <code>WHERE</code> (it runs earlier), and you filter aggregates with <code>HAVING</code> (after grouping) not <code>WHERE</code> (before).</p>
+    <div class="tbl"><table>
+      <thead><tr><th>#</th><th>Clause</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>FROM</code> / <code>JOIN</code></td><td>Choose &amp; combine source tables</td></tr>
+        <tr><td>2</td><td><code>WHERE</code></td><td>Filter individual rows (no aggregates yet)</td></tr>
+        <tr><td>3</td><td><code>GROUP BY</code></td><td>Collapse rows into groups</td></tr>
+        <tr><td>4</td><td><code>HAVING</code></td><td>Filter groups (can use aggregates)</td></tr>
+        <tr><td>5</td><td><code>SELECT</code></td><td>Pick columns, compute expressions &amp; aliases</td></tr>
+        <tr><td>6</td><td><code>DISTINCT</code></td><td>Remove duplicate rows</td></tr>
+        <tr><td>7</td><td><code>ORDER BY</code></td><td>Sort (can use SELECT aliases)</td></tr>
+        <tr><td>8</td><td><code>LIMIT</code> / <code>OFFSET</code></td><td>Take a slice of the result</td></tr>
+      </tbody>
+    </table></div>
+    <div class="key"><b>Mnemonic consequence.</b> Want to filter on a computed alias? You can in <code>ORDER BY</code> (step 7) but not in <code>WHERE</code> (step 2) — wrap it in a subquery/CTE or repeat the expression.</div>
+
+    <h3 id="sql-select">SELECT &amp; filtering</h3>
+    <div class="code"><span class="lang">sql</span><pre><code>SELECT customer_id,
+       amount * 1.2 AS amount_with_tax        -- expression + alias
+FROM   orders
+WHERE  status = 'paid'
+  AND  created_at &gt;= '2026-01-01'
+  AND  region IN ('EU', 'US')
+  AND  email LIKE '%@gmail.com'               -- % = any chars, _ = one
+  AND  amount BETWEEN 10 AND 100              -- inclusive
+  AND  coupon IS NOT NULL                     -- never use = NULL
+ORDER BY amount DESC
+LIMIT 20;</code></pre></div>
+    <div class="warn"><b>NULL is not a value, it's "unknown".</b> <code>x = NULL</code> is never true — use <code>IS NULL</code> / <code>IS NOT NULL</code>. Any arithmetic or comparison with NULL yields NULL, and <code>NOT IN (… NULL …)</code> can silently return no rows.</div>
+
+    <h3 id="sql-joins">Joins</h3>
+    <p>A join combines rows from two tables on a matching condition. The join <i>type</i> decides what happens to rows that have no match: <b>INNER</b> keeps only matches, <b>LEFT</b> keeps all left rows (NULLs where the right has no match), <b>RIGHT</b> the mirror, <b>FULL</b> keeps everything. Picking the wrong one — usually INNER when you needed LEFT — silently drops rows and is the most common data-pipeline bug.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Join</th><th>Keeps</th><th>Typical use</th></tr></thead>
+      <tbody>
+        <tr><td><code>INNER JOIN</code></td><td>Only rows matching in both</td><td>Strict relationships</td></tr>
+        <tr><td><code>LEFT JOIN</code></td><td>All left rows + matches</td><td>"Keep all customers, attach orders if any"</td></tr>
+        <tr><td><code>RIGHT JOIN</code></td><td>All right rows + matches</td><td>Rare; flip the table order instead</td></tr>
+        <tr><td><code>FULL OUTER JOIN</code></td><td>All rows from both</td><td>Reconciling two sources</td></tr>
+        <tr><td><code>CROSS JOIN</code></td><td>Cartesian product</td><td>Generating combinations</td></tr>
+        <tr><td><code>SELF JOIN</code></td><td>Table joined to itself</td><td>Hierarchies, employee→manager</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><span class="lang">sql</span><pre><code>SELECT c.name, COUNT(o.id) AS n_orders
+FROM   customers c
+LEFT JOIN orders o ON o.customer_id = c.id    -- keep customers w/ 0 orders
+GROUP BY c.name;
+
+-- Find customers with NO orders (anti-join)
+SELECT c.id
+FROM   customers c
+LEFT JOIN orders o ON o.customer_id = c.id
+WHERE  o.id IS NULL;                          -- the "missing" pattern
+
+-- Self join: each employee with their manager
+SELECT e.name AS emp, m.name AS manager
+FROM   employees e
+LEFT JOIN employees m ON e.manager_id = m.id;</code></pre></div>
+    <div class="warn"><b>Fan-out trap.</b> Joining to a table with multiple matching rows multiplies your rows, inflating any <code>SUM</code>/<code>COUNT</code>. Aggregate the child table first (in a CTE) before joining, or count <code>DISTINCT</code>.</div>
+
+    <h3 id="sql-agg">Aggregation &amp; GROUP BY</h3>
+    <p>Aggregate functions collapse many rows into one summary. <code>GROUP BY</code> defines the buckets; every non-aggregated column in <code>SELECT</code> must appear in <code>GROUP BY</code>. Remember <code>COUNT(*)</code> counts rows (including NULLs) while <code>COUNT(col)</code> skips NULLs, and that <code>HAVING</code> filters the grouped result.</p>
+    <div class="code"><span class="lang">sql</span><pre><code>SELECT region,
+       COUNT(*)            AS n_orders,
+       COUNT(DISTINCT customer_id) AS n_customers,
+       SUM(amount)         AS revenue,
+       AVG(amount)         AS avg_order,
+       MAX(amount)         AS biggest
+FROM   orders
+WHERE  status = 'paid'                 -- pre-aggregation filter
+GROUP BY region
+HAVING SUM(amount) &gt; 10000              -- post-aggregation filter
+ORDER BY revenue DESC;</code></pre></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Function</th><th>Returns</th><th>NULL handling</th></tr></thead>
+      <tbody>
+        <tr><td><code>COUNT(*)</code></td><td>number of rows</td><td>counts everything</td></tr>
+        <tr><td><code>COUNT(col)</code></td><td>non-null values</td><td>ignores NULLs</td></tr>
+        <tr><td><code>SUM / AVG</code></td><td>total / mean</td><td>ignores NULLs</td></tr>
+        <tr><td><code>MIN / MAX</code></td><td>extremes</td><td>ignores NULLs</td></tr>
+        <tr><td><code>STRING_AGG / ARRAY_AGG</code></td><td>concatenate group values</td><td>per dialect</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 id="sql-window">Window functions</h3>
+    <p>Window functions compute across a set of rows <i>related to the current row</i> without collapsing them — you keep every row <i>and</i> get an aggregate, ranking, or running total beside it. The anatomy is <code>func() OVER (PARTITION BY … ORDER BY …)</code>: <code>PARTITION BY</code> resets the calculation per group, <code>ORDER BY</code> defines sequence for rankings and running sums. These are the single highest-leverage SQL topic for analytics interviews.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Function</th><th>Gives you</th></tr></thead>
+      <tbody>
+        <tr><td><code>ROW_NUMBER()</code></td><td>unique 1,2,3… (ties broken arbitrarily) — great for dedup &amp; "latest per group"</td></tr>
+        <tr><td><code>RANK()</code> / <code>DENSE_RANK()</code></td><td>ranking with ties (gaps / no gaps)</td></tr>
+        <tr><td><code>LAG() / LEAD()</code></td><td>previous / next row's value — period-over-period change</td></tr>
+        <tr><td><code>SUM() OVER(...)</code></td><td>running / cumulative total</td></tr>
+        <tr><td><code>NTILE(n)</code></td><td>split rows into n buckets (quartiles, deciles)</td></tr>
+        <tr><td><code>FIRST_VALUE/LAST_VALUE</code></td><td>boundary values of the window</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><span class="lang">sql</span><pre><code>-- Latest order per customer (classic dedup pattern)
+SELECT * FROM (
+  SELECT *,
+         ROW_NUMBER() OVER (PARTITION BY customer_id
+                            ORDER BY created_at DESC) AS rn
+  FROM orders
+) t
+WHERE rn = 1;
+
+-- Month-over-month revenue change
+SELECT month, revenue,
+       revenue - LAG(revenue) OVER (ORDER BY month) AS mom_change
+FROM monthly;
+
+-- Running total &amp; 7-day moving average
+SELECT day, amount,
+       SUM(amount) OVER (ORDER BY day) AS running_total,
+       AVG(amount) OVER (ORDER BY day
+                         ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS ma7
+FROM daily;</code></pre></div>
+    <div class="tip"><b>Aggregate vs window.</b> <code>GROUP BY</code> returns one row per group; the same function <code>OVER()</code> returns one row per <i>input row</i> with the group stat attached. Use windows when you need detail and summary together.</div>
+
+    <h3 id="sql-cte">CTEs &amp; subqueries</h3>
+    <p>A Common Table Expression (<code>WITH … AS</code>) names a query so you can build a pipeline of readable steps instead of nesting subqueries inward. CTEs make complex logic legible and let you reuse a result; recursive CTEs walk hierarchies and generate sequences. Subqueries still shine for quick scalar lookups and <code>EXISTS</code> checks.</p>
+    <div class="code"><span class="lang">sql</span><pre><code>WITH paid AS (
+    SELECT customer_id, amount FROM orders WHERE status = 'paid'
+),
+totals AS (
+    SELECT customer_id, SUM(amount) AS spend FROM paid GROUP BY customer_id
+)
+SELECT c.name, t.spend
+FROM   totals t
+JOIN   customers c ON c.id = t.customer_id
+WHERE  t.spend &gt; 1000;
+
+-- Correlated subquery: customers above their region's average
+SELECT * FROM orders o
+WHERE amount &gt; (SELECT AVG(amount) FROM orders WHERE region = o.region);
+
+-- EXISTS (often faster than IN for "has any match")
+SELECT * FROM customers c
+WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id);
+
+-- Recursive CTE: org hierarchy
+WITH RECURSIVE tree AS (
+    SELECT id, manager_id, 1 AS lvl FROM employees WHERE manager_id IS NULL
+    UNION ALL
+    SELECT e.id, e.manager_id, t.lvl + 1
+    FROM employees e JOIN tree t ON e.manager_id = t.id
+)
+SELECT * FROM tree;</code></pre></div>
+
+    <h3 id="sql-cond">Conditionals, NULLs &amp; type handling</h3>
+    <div class="code"><span class="lang">sql</span><pre><code>-- CASE: inline if/else, e.g. bucketing
+SELECT amount,
+       CASE WHEN amount &lt; 50  THEN 'low'
+            WHEN amount &lt; 200 THEN 'mid'
+            ELSE 'high' END AS tier
+FROM orders;
+
+COALESCE(discount, 0)            -- first non-NULL -> default values
+NULLIF(a, b)                     -- NULL if a = b (guard divide-by-zero)
+CAST(amount AS DECIMAL(10,2))    -- explicit type conversion
+
+-- Conditional aggregation (pivot a column into metrics)
+SELECT
+  SUM(CASE WHEN status='paid'     THEN 1 ELSE 0 END) AS paid,
+  SUM(CASE WHEN status='refunded' THEN 1 ELSE 0 END) AS refunded
+FROM orders;</code></pre></div>
+
+    <h3 id="sql-perf">Indexes &amp; performance</h3>
+    <p>An index is a sorted lookup structure (usually a B-tree) that lets the engine find rows without scanning the whole table — turning an O(n) scan into O(log n). They speed up reads on filtered/joined/sorted columns but cost extra storage and slow writes, so you index the columns you filter and join on, not everything. When a query is slow, read the <code>EXPLAIN</code> plan to see whether it's doing a costly full scan.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Lever</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td>Index <code>WHERE</code>/<code>JOIN</code>/<code>ORDER BY</code> columns</td><td>Avoids full table scans</td></tr>
+        <tr><td>Select only needed columns</td><td>Less I/O than <code>SELECT *</code>; enables covering indexes</td></tr>
+        <tr><td>Filter early, before joins/aggregation</td><td>Shrinks the working set</td></tr>
+        <tr><td>Avoid functions on indexed columns in <code>WHERE</code></td><td><code>WHERE YEAR(d)=2026</code> disables the index; use a range</td></tr>
+        <tr><td>Partition / cluster large tables by date</td><td>Engine prunes irrelevant partitions</td></tr>
+        <tr><td>Read <code>EXPLAIN (ANALYZE)</code></td><td>Reveals scans, join order, row estimates</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><b>Index trade-off in one line.</b> Indexes make reads faster and writes slower and use disk — index the access paths that matter, measure with <code>EXPLAIN</code>, don't index blindly.</div>
+
+    <h3 id="sql-modeling">Data modeling</h3>
+    <p><b>Normalization</b> (OLTP / transactional systems) splits data into many tables to remove redundancy so each fact lives in one place — great for write integrity. <b>Denormalization</b> and the <b>star schema</b> (analytics / warehousing) deliberately duplicate data into wide fact + dimension tables so analysts can answer questions with fewer joins — great for read speed. Knowing <i>why</i> each exists is a standard data-engineering question.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Concept</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Primary key</td><td>Unique row identifier (not NULL)</td></tr>
+        <tr><td>Foreign key</td><td>Reference to another table's PK — enforces referential integrity</td></tr>
+        <tr><td>1NF / 2NF / 3NF</td><td>Atomic columns / no partial deps / no transitive deps</td></tr>
+        <tr><td>Fact table</td><td>Measurable events (sales, clicks) — many rows, numeric measures</td></tr>
+        <tr><td>Dimension table</td><td>Descriptive context (date, product, customer)</td></tr>
+        <tr><td>Star vs snowflake</td><td>Denormalized dims vs further-normalized dims</td></tr>
+        <tr><td>Slowly Changing Dimension</td><td>How you track history (Type 1 overwrite, Type 2 versioned rows)</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 id="sql-etl">ETL vs ELT &amp; pipeline concepts</h3>
+    <p>Both move data from sources into a warehouse; the difference is <i>when</i> you transform. <b>ETL</b> (Extract → Transform → Load) cleans data before loading — classic for on-prem warehouses with limited compute. <b>ELT</b> (Extract → Load → Transform) lands raw data first and transforms inside a powerful cloud warehouse (Snowflake/BigQuery) using SQL/dbt — the modern default because storage is cheap and compute scales. Beyond order, the engineering is about <b>idempotency, incremental loads, and data quality</b>.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Stage</th><th>What happens</th><th>Watch for</th></tr></thead>
+      <tbody>
+        <tr><td><b>Extract</b></td><td>Pull from APIs, DBs, files, streams</td><td>Rate limits, schema drift, incremental cursors</td></tr>
+        <tr><td><b>Transform</b></td><td>Clean, dedup, join, aggregate, conform types</td><td>NULLs, timezones, fan-out, business rules</td></tr>
+        <tr><td><b>Load</b></td><td>Write to warehouse / lake</td><td>Idempotency, upserts (MERGE), partitioning</td></tr>
+      </tbody>
+    </table></div>
+    <div class="key"><b>Concepts interviewers probe.</b> <b>Idempotency</b> — rerunning a job produces the same result (use <code>MERGE</code>/upsert, not blind <code>INSERT</code>). <b>Incremental load</b> — only process new/changed rows via a high-water-mark column. <b>Backfill</b> — reprocessing history. <b>Orchestration</b> — DAGs (Airflow/Dagster/Prefect) with dependencies, retries, scheduling. <b>Data quality</b> — null/uniqueness/freshness tests. <b>Batch vs streaming</b> — windowed jobs vs event-by-event (Kafka, Spark Structured Streaming).</div>
+    <div class="code"><span class="lang">sql</span><pre><code>-- Idempotent upsert (warehouse MERGE) — safe to re-run
+MERGE INTO dim_customer AS t
+USING staging_customer AS s   ON t.id = s.id
+WHEN MATCHED THEN UPDATE SET name = s.name, updated_at = s.updated_at
+WHEN NOT MATCHED THEN INSERT (id, name) VALUES (s.id, s.name);
+
+-- Incremental extract via high-water mark
+SELECT * FROM source_events
+WHERE updated_at &gt; :last_run_timestamp;     -- only new/changed rows</code></pre></div>
+
+    <h3 id="sql-patterns">Common query patterns to memorize</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Task</th><th>Technique</th></tr></thead>
+      <tbody>
+        <tr><td>Nth highest value</td><td><code>DENSE_RANK()</code> then filter <code>= N</code>, or <code>OFFSET N-1 LIMIT 1</code></td></tr>
+        <tr><td>Latest row per group</td><td><code>ROW_NUMBER() PARTITION BY group ORDER BY ts DESC</code>, keep <code>rn=1</code></td></tr>
+        <tr><td>Find duplicates</td><td><code>GROUP BY cols HAVING COUNT(*) &gt; 1</code></td></tr>
+        <tr><td>Rows with no match</td><td><code>LEFT JOIN … WHERE right.id IS NULL</code></td></tr>
+        <tr><td>Running total</td><td><code>SUM(x) OVER (ORDER BY d)</code></td></tr>
+        <tr><td>Period-over-period</td><td><code>LAG()</code> / <code>LEAD()</code></td></tr>
+        <tr><td>Pivot categories to columns</td><td>Conditional <code>SUM(CASE WHEN …)</code></td></tr>
+        <tr><td>Percent of total</td><td><code>x / SUM(x) OVER ()</code></td></tr>
+        <tr><td>Gaps &amp; islands / streaks</td><td>row-number difference trick</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- =========================================================
+       MATH & STATISTICS
+  ========================================================== -->
+  <section data-group="sec-math">
+    <div class="section-band">
+      <span class="ico" style="background:linear-gradient(135deg,var(--accent4),var(--accent2))">📐</span>
+      <h2 id="math-overview">Math &amp; Statistics</h2>
+    </div>
+    <p class="lead">For DS/ML the math you actually use clusters into four areas: <b>linear algebra</b> (how data and models are represented and multiplied), <b>calculus</b> (how models learn, via gradients), <b>probability</b> (how uncertainty is modelled), and <b>statistics</b> (how we draw conclusions from samples). The goal isn't proof-writing — it's intuition for what each quantity <i>means</i> and why an algorithm does what it does.</p>
+
+    <div class="toc-mini">
+      <h4>In this chapter</h4>
+      <ul>
+        <li><a href="#math-linalg">Linear algebra</a></li>
+        <li><a href="#math-calc">Calculus &amp; gradients</a></li>
+        <li><a href="#math-prob">Probability foundations</a></li>
+        <li><a href="#math-dist">Distributions</a></li>
+        <li><a href="#math-desc">Descriptive statistics</a></li>
+        <li><a href="#math-clt">Sampling &amp; the CLT</a></li>
+        <li><a href="#math-infer">Inference &amp; hypothesis tests</a></li>
+        <li><a href="#math-bayes">Bayes &amp; conditional probability</a></li>
+        <li><a href="#math-combo">Combinatorics</a></li>
+      </ul>
+    </div>
+
+    <h3 id="math-linalg">Linear algebra</h3>
+    <p>Data is a matrix: rows are observations, columns are features. A model often <i>is</i> a matrix multiply followed by a nonlinearity. So the operations that matter are the dot product (similarity/projection), matrix multiplication (applying a linear transform to every row at once), and the decompositions (eigen/SVD) that reveal a matrix's underlying structure — the engine behind PCA.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Object</th><th>Meaning / use</th></tr></thead>
+      <tbody>
+        <tr><td>Scalar, vector, matrix, tensor</td><td>0-D number, 1-D array, 2-D table, n-D generalization</td></tr>
+        <tr><td>Dot product \(\mathbf{a}\cdot\mathbf{b}=\sum a_ib_i\)</td><td>Similarity/projection; 0 ⇒ orthogonal</td></tr>
+        <tr><td>Norm \(\lVert \mathbf{x}\rVert_2=\sqrt{\sum x_i^2}\)</td><td>Vector length; L1/L2 used in regularization</td></tr>
+        <tr><td>Matrix product \(C=AB\)</td><td>Compose linear maps; \((m{\times}k)(k{\times}n){=}(m{\times}n)\)</td></tr>
+        <tr><td>Transpose \(A^\top\), Inverse \(A^{-1}\)</td><td>Flip axes; undo a transform (if non-singular)</td></tr>
+        <tr><td>Identity \(I\), rank, determinant</td><td>"Do nothing"; independent dims; volume scale (0 ⇒ singular)</td></tr>
+        <tr><td>Eigen \(A\mathbf{v}=\lambda\mathbf{v}\)</td><td>Directions a transform only stretches — basis of PCA</td></tr>
+        <tr><td>SVD \(A=U\Sigma V^\top\)</td><td>Universal factorization; dimensionality reduction, recommenders</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><b>Why ML cares.</b> A dense neural layer computes \(\mathbf{y}=W\mathbf{x}+\mathbf{b}\) — a matrix-vector product. PCA finds the eigenvectors of the covariance matrix (the directions of maximum variance). Cosine similarity \(\frac{\mathbf{a}\cdot\mathbf{b}}{\lVert\mathbf{a}\rVert\lVert\mathbf{b}\rVert}\) powers embeddings and search.</div>
+    <div class="code"><span class="lang">python</span><pre><code>import numpy as np
+A = np.array([[1, 2], [3, 4]])
+A @ B            # matrix multiply (NOT A * B, which is elementwise)
+A.T              # transpose
+np.linalg.inv(A); np.linalg.det(A)
+np.dot(a, b); np.linalg.norm(x)
+vals, vecs = np.linalg.eig(A)
+U, S, Vt = np.linalg.svd(A)</code></pre></div>
+
+    <h3 id="math-calc">Calculus &amp; gradients</h3>
+    <p>Training a model = minimizing a loss function. The <b>derivative</b> tells you the slope (how loss changes as a weight changes); the <b>gradient</b> generalizes this to many weights as the vector of partial derivatives, pointing in the direction of steepest <i>increase</i>. <b>Gradient descent</b> therefore steps in the <i>opposite</i> direction to go downhill. That single idea — follow the negative gradient — underlies essentially all model fitting.</p>
+    <p>Update rule, with learning rate \(\eta\):</p>
+    <div class="code"><span class="lang">text</span><pre><code>θ_new = θ_old − η · ∇L(θ)</code></pre></div>
+    <p>Written with the gradient symbol: \(\theta \leftarrow \theta - \eta\,\nabla_\theta L(\theta)\).</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Idea</th><th>Meaning</th><th>ML relevance</th></tr></thead>
+      <tbody>
+        <tr><td>Derivative \(f'(x)\)</td><td>Instantaneous rate of change</td><td>Slope of loss for one weight</td></tr>
+        <tr><td>Partial \(\partial f/\partial x_i\)</td><td>Slope holding others fixed</td><td>One component of the gradient</td></tr>
+        <tr><td>Gradient \(\nabla f\)</td><td>Vector of all partials</td><td>Direction of steepest ascent</td></tr>
+        <tr><td>Chain rule</td><td>\((f\circ g)' = f'(g)\,g'\)</td><td>Backpropagation</td></tr>
+        <tr><td>Learning rate \(\eta\)</td><td>Step size</td><td>Too big ⇒ diverge; too small ⇒ slow</td></tr>
+        <tr><td>Convex function</td><td>Bowl-shaped, one global min</td><td>Guarantees GD finds the optimum</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Backprop in one sentence.</b> It's the chain rule applied layer by layer from the loss backward, reusing each layer's local gradient to compute how every weight should change.</div>
+
+    <h3 id="math-prob">Probability foundations</h3>
+    <p>Probability quantifies uncertainty on a 0–1 scale. The rules you reuse everywhere: probabilities of mutually exclusive events add; independent events multiply; the complement is \(1-P\). The crucial distinction is <b>independent vs mutually exclusive</b> — these are opposites, not synonyms (mutually exclusive events are strongly <i>dependent</i>: if one happens the other can't).</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Rule</th><th>Formula</th><th>When</th></tr></thead>
+      <tbody>
+        <tr><td>Complement</td><td>\(P(A^c)=1-P(A)\)</td><td>"at least one" via 1 − none</td></tr>
+        <tr><td>Addition</td><td>\(P(A\cup B)=P(A)+P(B)-P(A\cap B)\)</td><td>"or" (subtract overlap)</td></tr>
+        <tr><td>Multiplication</td><td>\(P(A\cap B)=P(A)\,P(B\mid A)\)</td><td>"and" (sequential)</td></tr>
+        <tr><td>Independence</td><td>\(P(A\cap B)=P(A)P(B)\)</td><td>One doesn't affect the other</td></tr>
+        <tr><td>Conditional</td><td>\(P(A\mid B)=\dfrac{P(A\cap B)}{P(B)}\)</td><td>Update given info</td></tr>
+      </tbody>
+    </table></div>
+    <p>Expected value and variance of a random variable:</p>
+    <p style="text-align:center">\(E[X]=\sum_i x_i\,p_i, \qquad \mathrm{Var}(X)=E[(X-\mu)^2]=E[X^2]-\big(E[X]\big)^2, \qquad \sigma=\sqrt{\mathrm{Var}(X)}\)</p>
+
+    <h3 id="math-dist">Distributions you must recognize</h3>
+    <p>A distribution describes how probability is spread over outcomes. Recognizing which one fits a scenario lets you pick the right model and test. The split is <b>discrete</b> (countable outcomes) vs <b>continuous</b> (a density over a range).</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Distribution</th><th>Models</th><th>Key params / facts</th></tr></thead>
+      <tbody>
+        <tr><td>Bernoulli</td><td>single yes/no trial</td><td>mean \(p\), var \(p(1-p)\)</td></tr>
+        <tr><td>Binomial</td><td>#successes in \(n\) trials</td><td>mean \(np\), var \(np(1-p)\)</td></tr>
+        <tr><td>Poisson</td><td>#events per interval (rare)</td><td>mean = var = \(\lambda\)</td></tr>
+        <tr><td>Uniform</td><td>all outcomes equally likely</td><td>flat density</td></tr>
+        <tr><td>Normal (Gaussian)</td><td>sums/averages of many effects</td><td>\(\mu,\sigma\); 68-95-99.7 rule</td></tr>
+        <tr><td>Exponential</td><td>time between Poisson events</td><td>memoryless; rate \(\lambda\)</td></tr>
+      </tbody>
+    </table></div>
+    <p style="text-align:center">Normal density: \(f(x)=\dfrac{1}{\sigma\sqrt{2\pi}}\,e^{-\frac{(x-\mu)^2}{2\sigma^2}}\)</p>
+    <div class="key"><b>68–95–99.7 rule.</b> For a normal distribution, ~68% of data lies within 1σ of the mean, ~95% within 2σ, ~99.7% within 3σ. A z-score \(z=\frac{x-\mu}{\sigma}\) says how many standard deviations a value sits from the mean.</div>
+
+    <h3 id="math-desc">Descriptive statistics</h3>
+    <p>Before modelling you summarise. <b>Central tendency</b> (mean, median, mode) says where data sits; <b>spread</b> (variance, std, IQR, range) says how dispersed it is. The mean is sensitive to outliers while the median is robust — which is exactly why skewed data (income, house prices) is usually reported by median.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Measure</th><th>Formula / def</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Mean \(\bar{x}\)</td><td>\(\frac{1}{n}\sum x_i\)</td><td>outlier-sensitive</td></tr>
+        <tr><td>Median</td><td>middle value (sorted)</td><td>robust; use when skewed</td></tr>
+        <tr><td>Mode</td><td>most frequent value</td><td>only one for categoricals</td></tr>
+        <tr><td>Variance \(s^2\)</td><td>\(\frac{1}{n-1}\sum (x_i-\bar{x})^2\)</td><td>sample uses \(n-1\) (Bessel)</td></tr>
+        <tr><td>Std dev \(s\)</td><td>\(\sqrt{s^2}\)</td><td>same units as data</td></tr>
+        <tr><td>IQR</td><td>\(Q_3-Q_1\)</td><td>outlier = beyond \(1.5\times\)IQR</td></tr>
+        <tr><td>Covariance / correlation</td><td>\(\mathrm{Cov}/(\sigma_x\sigma_y)\)</td><td>\(r\in[-1,1]\), unitless</td></tr>
+        <tr><td>Skew / kurtosis</td><td>asymmetry / tailedness</td><td>shape diagnostics</td></tr>
+      </tbody>
+    </table></div>
+    <div class="warn"><b>Correlation ≠ causation.</b> A high \(r\) means two variables move together, not that one causes the other — a confounder or coincidence can produce it. Also, \(r\) only captures <i>linear</i> association.</div>
+
+    <h3 id="math-clt">Sampling &amp; the Central Limit Theorem</h3>
+    <p>We rarely measure a whole population, so we estimate from a sample. The <b>Central Limit Theorem</b> is why statistics works: regardless of the population's shape, the distribution of the <i>sample mean</i> approaches a normal distribution as sample size grows, with standard deviation \(\sigma/\sqrt{n}\) (the <b>standard error</b>). This is what lets us build confidence intervals and run tests even on non-normal data.</p>
+    <div class="key"><b>Standard error.</b> \(\mathrm{SE}=\dfrac{\sigma}{\sqrt{n}}\). Quadrupling the sample size only halves the error — diminishing returns. A 95% confidence interval is roughly \(\bar{x}\pm 1.96\,\mathrm{SE}\).</div>
+
+    <h3 id="math-infer">Inference &amp; hypothesis testing</h3>
+    <p>Hypothesis testing asks: could the effect I see be just noise? You assume a <b>null hypothesis</b> \(H_0\) (no effect), compute how surprising your data would be if \(H_0\) were true (the <b>p-value</b>), and reject \(H_0\) if that's below a threshold \(\alpha\) (commonly 0.05). The p-value is <i>not</i> the probability the hypothesis is true — it's \(P(\text{data this extreme}\mid H_0)\).</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>\(H_0\) / \(H_1\)</td><td>Null (no effect) / alternative (effect exists)</td></tr>
+        <tr><td>\(\alpha\)</td><td>Significance level; tolerated false-positive rate (0.05)</td></tr>
+        <tr><td>p-value</td><td>\(P(\text{data} \ge \text{observed} \mid H_0)\); small ⇒ reject \(H_0\)</td></tr>
+        <tr><td>Type I error</td><td>False positive — reject a true \(H_0\) (rate \(\alpha\))</td></tr>
+        <tr><td>Type II error</td><td>False negative — fail to reject a false \(H_0\) (rate \(\beta\))</td></tr>
+        <tr><td>Power</td><td>\(1-\beta\); chance of detecting a real effect</td></tr>
+        <tr><td>Confidence interval</td><td>Range of plausible values for the parameter</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Question</th><th>Test</th></tr></thead>
+      <tbody>
+        <tr><td>Compare 2 group means</td><td>t-test (paired or independent)</td></tr>
+        <tr><td>Compare 3+ group means</td><td>ANOVA</td></tr>
+        <tr><td>Association between categoricals</td><td>Chi-square (χ²)</td></tr>
+        <tr><td>Large-sample mean/proportion</td><td>z-test</td></tr>
+        <tr><td>Non-normal / ranked data</td><td>Mann-Whitney, Wilcoxon</td></tr>
+        <tr><td>A/B test conversion</td><td>two-proportion z-test</td></tr>
+      </tbody>
+    </table></div>
+    <div class="warn"><b>Multiple comparisons.</b> Run 20 tests at \(\alpha=0.05\) and you expect one "significant" result by chance. Correct for it (Bonferroni, FDR) when testing many hypotheses.</div>
+
+    <h3 id="math-bayes">Bayes &amp; conditional probability</h3>
+    <p>Bayes' theorem updates a belief in light of evidence — the backbone of Naive Bayes classifiers, spam filters, and the famous "how likely is disease given a positive test" puzzle. The counterintuitive lesson: with a rare condition, even an accurate test produces many false positives, so the posterior can be far lower than the test's accuracy.</p>
+    <p style="text-align:center">\(P(A\mid B)=\dfrac{P(B\mid A)\,P(A)}{P(B)}\)</p>
+    <p style="text-align:center"><span class="muted">posterior = (likelihood × prior) / evidence</span></p>
+    <div class="note"><b>Base-rate example.</b> A disease affects 1% of people; a test is 99% accurate. A positive result still gives only ~50% chance of disease, because the 1% sick are swamped by false positives from the 99% healthy. Always weight by the prior.</div>
+
+    <h3 id="math-combo">Combinatorics</h3>
+    <p>Counting underlies probability and complexity. The core choice: does <b>order matter</b>? If yes, permutations; if no, combinations. If you can reuse items, multiply with repetition.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Concept</th><th>Formula</th><th>"How many ways to…"</th></tr></thead>
+      <tbody>
+        <tr><td>Factorial</td><td>\(n! = n(n-1)\cdots 1\)</td><td>arrange \(n\) items</td></tr>
+        <tr><td>Permutations</td><td>\(P(n,k)=\dfrac{n!}{(n-k)!}\)</td><td>pick \(k\) ordered</td></tr>
+        <tr><td>Combinations</td><td>\(\binom{n}{k}=\dfrac{n!}{k!(n-k)!}\)</td><td>pick \(k\) unordered</td></tr>
+        <tr><td>With repetition</td><td>\(n^k\)</td><td>\(k\) picks, reuse allowed</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><span class="lang">python</span><pre><code>from math import factorial, comb, perm
+comb(5, 2)     # 10  -> C(5,2), order doesn't matter
+perm(5, 2)     # 20  -> P(5,2), order matters
+factorial(5)   # 120</code></pre></div>
+  </section>
+
+  <!-- =========================================================
+       MACHINE LEARNING
+  ========================================================== -->
+  <section data-group="sec-ml">
+    <div class="section-band">
+      <span class="ico" style="background:linear-gradient(135deg,var(--accent),var(--accent3))">🤖</span>
+      <h2 id="ml-overview">Machine Learning</h2>
+    </div>
+    <p class="lead">Machine learning fits a function from data instead of hand-coding rules. Almost every interview circles three themes: <b>how do you frame the problem</b> (supervised/unsupervised, classification/regression), <b>how do you stop the model memorizing</b> (the bias–variance trade-off, regularization, validation), and <b>how do you know it's any good</b> (the right metric for the right problem). Master those and the specific algorithms become variations on a theme.</p>
+
+    <div class="toc-mini">
+      <h4>In this chapter</h4>
+      <ul>
+        <li><a href="#ml-taxonomy">The ML landscape</a></li>
+        <li><a href="#ml-workflow">Standard workflow</a></li>
+        <li><a href="#ml-biasvar">Bias–variance &amp; overfitting</a></li>
+        <li><a href="#ml-validation">Train/val/test &amp; CV</a></li>
+        <li><a href="#ml-regression">Regression</a></li>
+        <li><a href="#ml-classification">Classification</a></li>
+        <li><a href="#ml-trees">Trees &amp; ensembles</a></li>
+        <li><a href="#ml-unsup">Unsupervised learning</a></li>
+        <li><a href="#ml-features">Feature engineering</a></li>
+        <li><a href="#ml-metrics">Evaluation metrics</a></li>
+        <li><a href="#ml-nn">Neural nets &amp; deep learning</a></li>
+        <li><a href="#ml-sklearn">scikit-learn patterns</a></li>
+      </ul>
+    </div>
+
+    <h3 id="ml-taxonomy">The ML landscape</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Paradigm</th><th>Data</th><th>Goal</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td><b>Supervised</b></td><td>labeled (X, y)</td><td>predict y from X</td><td>regression, classification</td></tr>
+        <tr><td><b>Unsupervised</b></td><td>unlabeled (X)</td><td>find structure</td><td>clustering, PCA, anomaly</td></tr>
+        <tr><td><b>Semi-supervised</b></td><td>few labels + many unlabeled</td><td>leverage cheap data</td><td>label propagation</td></tr>
+        <tr><td><b>Reinforcement</b></td><td>states + rewards</td><td>learn a policy by trial</td><td>game agents, robotics</td></tr>
+      </tbody>
+    </table></div>
+    <p>Within supervised learning, the target type sets the task: a <b>continuous</b> target (price, temperature) is <b>regression</b>; a <b>categorical</b> target (spam/not, digit 0–9) is <b>classification</b>.</p>
+
+    <h3 id="ml-workflow">The standard workflow</h3>
+    <p>Real projects spend most effort outside the model. The reliable loop: frame the problem and metric → collect &amp; clean data → split <i>before</i> any fitting (to avoid leakage) → engineer features → train a simple baseline → evaluate on held-out data → tune → iterate. A logistic-regression baseline you understand beats a fancy model you can't debug.</p>
+    <div class="code"><span class="lang">text</span><pre><code>Problem &amp; metric → Data collection → Cleaning/EDA →
+Split (train/val/test) → Feature engineering → Baseline model →
+Evaluate → Tune hyperparameters → Error analysis → Deploy &amp; monitor</code></pre></div>
+    <div class="warn"><b>Data leakage</b> is the silent killer: any time information from the test set (or the future, or the target) sneaks into training, your metrics look great and fail in production. Fit scalers/encoders on the <i>training fold only</i>, then apply to validation/test.</div>
+
+    <h3 id="ml-biasvar">Bias–variance &amp; over/underfitting</h3>
+    <p>Total error decomposes into <b>bias</b> (error from wrong assumptions — the model is too simple, <i>underfitting</i>), <b>variance</b> (error from sensitivity to the particular training data — the model is too complex, <i>overfitting</i>), and irreducible noise. You can usually trade one for the other; the art is finding the sweet spot where validation error is lowest.</p>
+    <p style="text-align:center">\(\text{Error} = \text{Bias}^2 + \text{Variance} + \sigma^2_{\text{irreducible}}\)</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Symptom</th><th>Diagnosis</th><th>Fixes</th></tr></thead>
+      <tbody>
+        <tr><td>High train error &amp; high val error</td><td>Underfitting (high bias)</td><td>more features, complex model, train longer, less regularization</td></tr>
+        <tr><td>Low train error, high val error</td><td>Overfitting (high variance)</td><td>more data, regularization, simpler model, dropout, early stopping</td></tr>
+        <tr><td>Both low &amp; close</td><td>Good fit ✅</td><td>ship it</td></tr>
+      </tbody>
+    </table></div>
+    <div class="key"><b>Regularization</b> penalizes complexity to curb variance. <b>L2 (Ridge)</b> shrinks weights smoothly toward zero; <b>L1 (Lasso)</b> drives some weights exactly to zero, doing feature selection; <b>ElasticNet</b> blends both. Larger penalty \(\lambda\) ⇒ simpler model ⇒ more bias, less variance.</div>
+
+    <h3 id="ml-validation">Train/validation/test &amp; cross-validation</h3>
+    <p>You split data so you can estimate performance on <i>unseen</i> examples. Train fits parameters, validation tunes hyperparameters and picks models, and the test set is touched <i>once</i> at the very end for an honest estimate. <b>k-fold cross-validation</b> rotates the validation fold k times and averages — a more stable estimate that uses all data, essential when datasets are small.</p>
+    <div class="code"><span class="lang">python</span><pre><code>from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
+X_tr, X_te, y_tr, y_te = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)   # stratify keeps class ratios
+
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+scores = cross_val_score(model, X_tr, y_tr, cv=cv, scoring="f1")
+scores.mean(), scores.std()</code></pre></div>
+    <div class="note"><b>Special cases.</b> For <b>time series</b> never shuffle — use forward-chaining splits so you only train on the past. For <b>imbalanced classes</b> use <i>stratified</i> folds so each fold mirrors the class ratio.</div>
+
+    <h3 id="ml-regression">Regression</h3>
+    <p>Regression predicts a continuous value by fitting a line/surface that minimizes squared error. <b>Linear regression</b> assumes a linear relationship and is the interpretable baseline; its coefficients are the effect of each feature holding others fixed. Add polynomial terms for curvature, and regularize (Ridge/Lasso) when features are many or correlated.</p>
+    <p style="text-align:center">\(\hat{y}=\beta_0+\beta_1x_1+\cdots+\beta_px_p,\qquad \text{minimize } \sum_i (y_i-\hat{y}_i)^2\)</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Metric</th><th>Formula idea</th><th>Reading</th></tr></thead>
+      <tbody>
+        <tr><td>MSE / RMSE</td><td>mean (root) squared error</td><td>penalizes big errors; RMSE in target units</td></tr>
+        <tr><td>MAE</td><td>mean absolute error</td><td>robust to outliers</td></tr>
+        <tr><td>R²</td><td>variance explained</td><td>1 = perfect, 0 = no better than mean</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Linear regression assumptions:</b> linearity, independence of errors, homoscedasticity (constant error variance), normally distributed residuals, little multicollinearity. Violations don't break prediction but invalidate the coefficient inference.</div>
+
+    <h3 id="ml-classification">Classification</h3>
+    <p>Classification predicts a category. <b>Logistic regression</b> — despite the name — is the linear classifier baseline: it passes a linear score through the sigmoid to output a probability, then thresholds it. Other staples: <b>k-NN</b> (vote among nearest neighbours, no training), <b>SVM</b> (maximum-margin boundary, kernels for nonlinearity), and <b>Naive Bayes</b> (fast, strong with text).</p>
+    <p style="text-align:center">Sigmoid: \(\sigma(z)=\dfrac{1}{1+e^{-z}}\in(0,1)\), with \(z=\beta_0+\boldsymbol\beta^\top\mathbf{x}\)</p>
+    <div class="code"><span class="lang">python</span><pre><code>from sklearn.linear_model import LogisticRegression
+clf = LogisticRegression(max_iter=1000, C=1.0)   # C = 1/λ (inverse reg.)
+clf.fit(X_tr, y_tr)
+proba = clf.predict_proba(X_te)[:, 1]            # P(class 1)
+pred  = (proba &gt;= 0.5).astype(int)               # tune threshold per metric</code></pre></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Model</th><th>Strength</th><th>Watch out</th></tr></thead>
+      <tbody>
+        <tr><td>Logistic regression</td><td>interpretable, calibrated probs</td><td>only linear boundaries</td></tr>
+        <tr><td>k-NN</td><td>simple, non-parametric</td><td>slow at predict, scale-sensitive, curse of dimensionality</td></tr>
+        <tr><td>SVM</td><td>strong margins, kernels</td><td>scaling-sensitive, slow on big data</td></tr>
+        <tr><td>Naive Bayes</td><td>fast, great for text</td><td>assumes feature independence</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 id="ml-trees">Decision trees &amp; ensembles</h3>
+    <p>A decision tree splits the data on the feature that best separates the target (by Gini impurity or information gain), recursively — wonderfully interpretable but prone to overfitting. <b>Ensembles</b> combine many trees to fix that: <b>bagging/Random Forest</b> trains trees on bootstrapped samples in parallel and averages (reduces variance), while <b>boosting</b> (XGBoost, LightGBM, gradient boosting) trains trees sequentially, each correcting the last's errors (reduces bias). Boosted trees are the workhorse for tabular data.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Method</th><th>How</th><th>Reduces</th><th>Trees built</th></tr></thead>
+      <tbody>
+        <tr><td>Single tree</td><td>greedy splits</td><td>—</td><td>1</td></tr>
+        <tr><td>Bagging / Random Forest</td><td>bootstrap samples + feature subsets, vote/average</td><td>variance</td><td>parallel</td></tr>
+        <tr><td>Boosting (XGBoost/LightGBM)</td><td>each tree fits prior residuals</td><td>bias</td><td>sequential</td></tr>
+      </tbody>
+    </table></div>
+    <p style="text-align:center">Gini impurity: \(G=1-\sum_k p_k^2\) · Entropy: \(H=-\sum_k p_k\log_2 p_k\)</p>
+    <div class="tip"><b>Why RF resists overfitting:</b> decorrelating trees (random feature subsets per split) means their errors partly cancel when averaged. Trees also need no feature scaling and handle nonlinearities and interactions for free.</div>
+
+    <h3 id="ml-unsup">Unsupervised learning</h3>
+    <p>With no labels, the goal is structure. <b>Clustering</b> groups similar points: <b>k-means</b> partitions into k spherical clusters by minimizing within-cluster distance (you choose k, e.g. via the elbow/silhouette), while <b>DBSCAN</b> finds density-based clusters of any shape and flags outliers. <b>Dimensionality reduction</b> compresses features: <b>PCA</b> projects onto the directions of maximum variance (linear), <b>t-SNE/UMAP</b> preserve local neighbourhoods for visualization (nonlinear).</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Method</th><th>Type</th><th>Use &amp; note</th></tr></thead>
+      <tbody>
+        <tr><td>k-means</td><td>clustering</td><td>fast; choose k; assumes round, similar-size clusters</td></tr>
+        <tr><td>Hierarchical</td><td>clustering</td><td>dendrogram; no preset k</td></tr>
+        <tr><td>DBSCAN</td><td>clustering</td><td>arbitrary shapes + noise; sensitive to ε</td></tr>
+        <tr><td>PCA</td><td>dim. reduction</td><td>linear, variance-maximizing; decorrelates features</td></tr>
+        <tr><td>t-SNE / UMAP</td><td>dim. reduction</td><td>visualization only; don't read global distances</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 id="ml-features">Feature engineering &amp; preprocessing</h3>
+    <p>Models are only as good as their inputs. The recurring tasks: handle missing values, encode categoricals into numbers, scale features so distance/gradient methods behave, and create informative derived features. Crucially, <b>fit every transformer on the training data only</b> and apply to the rest — bundle them in a <code>Pipeline</code> so this happens automatically inside cross-validation.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Task</th><th>Techniques</th></tr></thead>
+      <tbody>
+        <tr><td>Missing values</td><td>drop, mean/median impute, indicator flag, model-based</td></tr>
+        <tr><td>Categorical encoding</td><td>one-hot (low cardinality), ordinal, target/frequency encoding</td></tr>
+        <tr><td>Scaling</td><td>StandardScaler (z-score), MinMax, RobustScaler (outliers)</td></tr>
+        <tr><td>Skewed numerics</td><td>log / Box-Cox transform</td></tr>
+        <tr><td>Imbalanced classes</td><td>class weights, SMOTE oversample, undersample, threshold tuning</td></tr>
+        <tr><td>Derived features</td><td>ratios, dates→parts, interactions, binning, text→TF-IDF/embeddings</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><b>Which models need scaling?</b> Distance- and gradient-based ones (k-NN, SVM, k-means, PCA, linear/logistic, neural nets) do. Tree-based models (RF, XGBoost) are scale-invariant and don't.</div>
+
+    <h3 id="ml-metrics">Evaluation metrics</h3>
+    <p>The single biggest classification mistake is trusting <b>accuracy on imbalanced data</b>: predict "not fraud" always and you're 99.9% accurate yet useless. The confusion matrix gives the honest building blocks; from it, <b>precision</b> asks "of those I flagged, how many were right?" and <b>recall</b> asks "of the real positives, how many did I catch?". Which you favour depends on the cost of each error type.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Metric</th><th>Formula</th><th>Optimize when…</th></tr></thead>
+      <tbody>
+        <tr><td>Accuracy</td><td>\(\frac{TP+TN}{\text{all}}\)</td><td>balanced classes</td></tr>
+        <tr><td>Precision</td><td>\(\frac{TP}{TP+FP}\)</td><td>false positives are costly (spam, fraud flags)</td></tr>
+        <tr><td>Recall (sensitivity)</td><td>\(\frac{TP}{TP+FN}\)</td><td>false negatives are costly (disease, churn)</td></tr>
+        <tr><td>F1</td><td>\(2\cdot\frac{P\cdot R}{P+R}\)</td><td>need balance, imbalanced data</td></tr>
+        <tr><td>ROC-AUC</td><td>area under TPR–FPR curve</td><td>ranking quality across thresholds</td></tr>
+        <tr><td>PR-AUC</td><td>area under precision–recall</td><td>highly imbalanced positives</td></tr>
+        <tr><td>Log loss</td><td>penalizes confident wrong probs</td><td>well-calibrated probabilities</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><span class="lang">text</span><pre><code>Confusion matrix          Predicted +   Predicted −
+Actual +                      TP            FN     (missed positives)
+Actual −                      FP            TN
+Precision = TP/(TP+FP)   Recall = TP/(TP+FN)   F1 = harmonic mean</code></pre></div>
+    <div class="key"><b>Precision–recall trade-off.</b> Lowering the decision threshold catches more positives (↑recall) but flags more false alarms (↓precision). Pick the operating point from the cost of each error, not a default 0.5.</div>
+
+    <h3 id="ml-nn">Neural networks &amp; deep learning</h3>
+    <p>A neural network stacks layers of weighted sums followed by nonlinear <b>activation functions</b>; depth lets it learn hierarchical features automatically, which is why deep nets dominate images, audio, and language. Training is gradient descent powered by <b>backpropagation</b> (the chain rule computing each weight's gradient). The practical knobs are architecture, activation, optimizer, learning rate, and regularization (dropout, weight decay, early stopping).</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Piece</th><th>Role</th><th>Common choice</th></tr></thead>
+      <tbody>
+        <tr><td>Activation</td><td>add nonlinearity</td><td>ReLU (hidden), softmax/sigmoid (output)</td></tr>
+        <tr><td>Loss</td><td>what to minimize</td><td>cross-entropy (class), MSE (regression)</td></tr>
+        <tr><td>Optimizer</td><td>how to descend</td><td>Adam (default), SGD+momentum</td></tr>
+        <tr><td>Regularization</td><td>fight overfitting</td><td>dropout, weight decay, early stopping, batchnorm</td></tr>
+        <tr><td>Architecture</td><td>match the data</td><td>CNN (images), RNN/LSTM (sequences), Transformer (text)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Why nonlinearity matters.</b> Stacking linear layers with no activation collapses to a single linear layer — the network could only fit lines. ReLU (\(\max(0,x)\)) and friends are what let depth model complex functions, and they keep gradients flowing (mitigating vanishing gradients). <b>Transformers</b> replaced recurrence with self-attention, letting models weigh every token against every other in parallel — the architecture behind modern LLMs.</div>
+
+    <h3 id="ml-sklearn">scikit-learn patterns</h3>
+    <p>The library's consistent API is itself worth knowing: every estimator has <code>.fit()</code>, predictors add <code>.predict()</code>, transformers add <code>.transform()</code>. Wrapping preprocessing + model in a <code>Pipeline</code> prevents leakage and makes tuning one object trivial.</p>
+    <div class="code"><span class="lang">python</span><pre><code>from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+
+pipe = Pipeline([
+    ("scale", StandardScaler()),                 # fit on train fold only
+    ("clf",   RandomForestClassifier(random_state=42)),
+])
+
+grid = GridSearchCV(
+    pipe,
+    {"clf__n_estimators": [100, 300], "clf__max_depth": [None, 10]},
+    cv=5, scoring="f1", n_jobs=-1,
+)
+grid.fit(X_tr, y_tr)
+grid.best_params_, grid.best_score_
+
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
+y_pred = grid.predict(X_te)
+print(classification_report(y_te, y_pred))
+roc_auc_score(y_te, grid.predict_proba(X_te)[:, 1])</code></pre></div>
+    <div class="key"><b>Algorithm picker.</b> Tabular data → start with gradient-boosted trees (XGBoost/LightGBM) or Random Forest. Need interpretability → linear/logistic regression or a single tree. Text → TF-IDF + linear, or transformers. Images/audio/sequence → deep learning. Always benchmark against a trivial baseline first.</div>
+  </section>
+
+  <!-- =========================================================
+       INTERVIEW PREP (role-tailored)
+  ========================================================== -->
+  <section data-group="sec-interview">
+    <div class="section-band">
+      <span class="ico" style="background:linear-gradient(135deg,var(--accent2),var(--accent))">🎯</span>
+      <h2 id="iv-overview">Interview Prep</h2>
+    </div>
+    <p class="lead">This chapter is the applied layer on top of the theory above, prioritized for your actual pipeline: <b>ML6</b> (multimodal retrieval, CLIP, Vertex AI), <b>Rotate</b> (Junior Data Engineer), and <b>Cyferd</b>. The cross-cutting truth: interviewers usually care less about the single "right" answer and more about whether you can <i>reason through tradeoffs out loud</i>. Narrate your thinking, state assumptions, and name the alternative you rejected.</p>
+
+    <div class="toc-mini">
+      <h4>In this chapter</h4>
+      <ul>
+        <li><a href="#iv-roadmap">Role-by-role roadmap</a></li>
+        <li><a href="#iv-clip">CLIP &amp; contrastive learning</a></li>
+        <li><a href="#iv-dl">Deep learning &amp; attention</a></li>
+        <li><a href="#iv-mlops">MLOps &amp; deployment</a></li>
+        <li><a href="#iv-pandas">Pandas for data engineering</a></li>
+        <li><a href="#iv-apis">APIs, pagination &amp; rate limits</a></li>
+        <li><a href="#iv-validation">Data validation &amp; cleaning</a></li>
+        <li><a href="#iv-sysdesign">System design lite</a></li>
+        <li><a href="#iv-stats">Stats talking points</a></li>
+        <li><a href="#iv-tradeoffs">Communicating tradeoffs</a></li>
+      </ul>
+    </div>
+
+    <h3 id="iv-roadmap">Role-by-role roadmap</h3>
+    <p>Each role weights the same fundamentals differently. Use this to decide what to over-prepare. Cross-reference the deep dives in the Python, SQL, Math, and ML chapters for the underlying theory; this section adds the applied/role-specific layer.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Role</th><th>Heaviest weight</th><th>Your edge to lead with</th></tr></thead>
+      <tbody>
+        <tr><td><b>ML6</b> — ML/multimodal</td><td>ML theory, CLIP/contrastive, embeddings &amp; retrieval, Vertex AI/MLOps</td><td>Thesis methodology rigor; multimodal/CLIP challenge familiarity</td></tr>
+        <tr><td><b>Rotate</b> — Jr Data Engineer</td><td>SQL (windows, joins), ETL/ELT, pandas efficiency, schema design</td><td>Pipeline thinking + clean, validated data habits</td></tr>
+        <tr><td><b>Cyferd</b></td><td>General SWE/data fundamentals, data modeling, reasoning out loud</td><td>Breadth across DS + DE; clear tradeoff communication</td></tr>
+      </tbody>
+    </table></div>
+    <div class="key"><b>Your thesis is a reusable story.</b> Leave-one-dataset-out (LODO) cross-validation is a strong, specific answer to "how do you ensure a model generalizes?" — it tests transfer to <i>unseen data sources/distributions</i>, not just unseen rows, which exposes dataset-specific shortcuts that standard k-fold hides. Pair it with your NL/prevalence-proxy finding as a concrete example of validating a methodology assumption. Have a 60-second and a 3-minute version ready.</div>
+
+    <h3 id="iv-clip">CLIP, contrastive learning &amp; multimodal retrieval</h3>
+    <p>CLIP learns a <i>shared</i> embedding space for images and text by training two encoders so that matching image–text pairs land close together and mismatched pairs land far apart. That alignment is what enables <b>zero-shot classification</b> (compare an image to text prompts like "a photo of a cat") and <b>multimodal retrieval</b> (search images with text and vice versa) without task-specific training.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Concept</th><th>What it means</th></tr></thead>
+      <tbody>
+        <tr><td>Two encoders</td><td>Image encoder (ViT/CNN) + text encoder (Transformer) map each modality to a vector</td></tr>
+        <tr><td>Contrastive objective</td><td>Pull matched pairs together, push the rest apart — the InfoNCE loss over a batch</td></tr>
+        <tr><td>Shared embedding space</td><td>Image and text vectors are comparable directly via cosine similarity</td></tr>
+        <tr><td>Temperature \(\tau\)</td><td>Scales the similarity logits; sharpens/softens the contrastive distribution</td></tr>
+        <tr><td>Zero-shot classification</td><td>Encode class names as prompts; pick the nearest to the image embedding</td></tr>
+        <tr><td>Retrieval</td><td>Embed the query, nearest-neighbour search (FAISS/ScaNN) over the index</td></tr>
+      </tbody>
+    </table></div>
+    <p style="text-align:center">Cosine similarity drives matching: \(\text{sim}(\mathbf{u},\mathbf{v})=\dfrac{\mathbf{u}\cdot\mathbf{v}}{\lVert\mathbf{u}\rVert\,\lVert\mathbf{v}\rVert}\)</p>
+    <div class="code"><span class="lang">python</span><pre><code># Contrastive (InfoNCE) intuition over a batch of N image-text pairs
+# image_emb, text_emb: L2-normalized, shape (N, d)
+logits = (image_emb @ text_emb.T) / temperature   # (N, N) similarity matrix
+labels = torch.arange(N)                           # the diagonal = correct pairs
+loss = 0.5 * (cross_entropy(logits, labels)        # image -> text direction
+            + cross_entropy(logits.T, labels))     # text -> image direction
+# Zero-shot: similarity of one image vs. K text prompts -> argmax</code></pre></div>
+    <div class="tip"><b>Likely ML6 probes:</b> "Why contrastive instead of a classifier?" (no fixed label set; learns transferable alignment). "How would you build retrieval over a million images?" (encode once, store vectors, approximate nearest-neighbour index, re-rank top-k). "Failure modes?" (domain shift from the training distribution, fine-grained distinctions, prompt sensitivity).</div>
+
+    <h3 id="iv-dl">Deep learning &amp; the attention mechanism</h3>
+    <p>Aim for conceptual clarity, not derivations. <b>Backpropagation</b> is just the chain rule run backward through the network, reusing each layer's local gradient so every weight learns how it contributed to the loss. <b>Self-attention</b> lets each token look at every other token and weight them by relevance, computed in parallel — which is why Transformers scale better than RNNs that must process a sequence step by step.</p>
+    <p style="text-align:center">Attention: \(\text{Attn}(Q,K,V)=\text{softmax}\!\left(\dfrac{QK^\top}{\sqrt{d_k}}\right)V\)</p>
+    <div class="tbl"><table>
+      <thead><tr><th>RNN/LSTM</th><th>Transformer</th></tr></thead>
+      <tbody>
+        <tr><td>Sequential — step t needs t−1</td><td>Parallel — all positions at once</td></tr>
+        <tr><td>Long-range info fades (vanishing gradient)</td><td>Direct token-to-token paths via attention</td></tr>
+        <tr><td>Hard to parallelize on GPUs</td><td>Highly parallel ⇒ scales with data/compute</td></tr>
+      </tbody>
+    </table></div>
+    <div class="note"><b>One-line answers to have ready.</b> Q/K/V = "what I'm looking for / what I offer as a key / the content I pass on". The \(\sqrt{d_k}\) scaling keeps dot products from getting huge and saturating the softmax. Multi-head attention = several attention patterns learned in parallel, then concatenated. Positional encodings reinject order, since attention itself is permutation-invariant.</div>
+
+    <h3 id="iv-mlops">MLOps &amp; deployment (Vertex AI context)</h3>
+    <p>Beyond training, ML6 will care whether you can <i>ship and keep a model alive</i>. The core distinctions: how you serve predictions, how you package the model, and how you catch it degrading over time. You don't need deep ops expertise — you need to reason about the lifecycle.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Topic</th><th>Key idea</th><th>When / why</th></tr></thead>
+      <tbody>
+        <tr><td>Batch vs. real-time serving</td><td>Score a stored dataset on a schedule vs. respond to live requests with low latency</td><td>Batch for daily scores/recs; real-time for on-demand predictions</td></tr>
+        <tr><td>Containerization (Docker)</td><td>Package code + deps + model into a portable image</td><td>"Works on my machine" → runs identically anywhere; reproducible deploys</td></tr>
+        <tr><td>Model + data versioning</td><td>Track which model/data/code produced a result</td><td>Rollback, reproducibility, auditing (e.g. model registry)</td></tr>
+        <tr><td>Model drift monitoring</td><td>Watch input distributions &amp; performance over time</td><td><b>Data drift</b> (inputs change) vs <b>concept drift</b> (X→y relationship changes) ⇒ retrain trigger</td></tr>
+        <tr><td>CI/CD for ML</td><td>Automated test → build → deploy pipeline</td><td>Safe, repeatable releases; retraining pipelines</td></tr>
+        <tr><td>Feature consistency</td><td>Same transforms at train and serve time</td><td>Prevents training–serving skew (a leakage cousin)</td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Vertex AI framing.</b> Vertex is Google Cloud's managed ML platform — training, a model registry, endpoints for serving, pipelines, and monitoring. You don't need every button; be able to say "I'd train, register the model with a version, deploy to an endpoint for real-time inference (or batch-predict for bulk), and set up drift monitoring to flag retraining."</div>
+
+    <h3 id="iv-pandas">Pandas for data engineering</h3>
+    <p>The headline skill is <b>vectorization</b>: operate on whole columns (Series) at once so the work runs in fast C loops, instead of Python <code>for</code>/<code>iterrows</code> loops that are often 10–100× slower. The mindset mirrors NumPy — express the transform as array math, not row iteration. Know the efficient idioms for grouping, joining, and reshaping too.</p>
+    <div class="code"><span class="lang">python</span><pre><code>import pandas as pd, numpy as np
+
+# SLOW: Python-level loop
+df["total"] = [r.price * r.qty for _, r in df.iterrows()]   # avoid iterrows
+# FAST: vectorized column math
+df["total"] = df["price"] * df["qty"]
+
+# Conditional without a loop
+df["tier"] = np.where(df["total"] &gt; 100, "high", "low")
+df["bucket"] = pd.cut(df["total"], bins=[0,50,200,np.inf], labels=["lo","mid","hi"])
+
+# Group / aggregate / join (SQL in pandas)
+g = df.groupby("region")["total"].agg(["sum","mean","count"])
+merged = orders.merge(customers, on="customer_id", how="left")   # = LEFT JOIN
+
+# Reshape
+wide = df.pivot_table(index="day", columns="region", values="total", aggfunc="sum")
+long = wide.reset_index().melt(id_vars="day", var_name="region", value_name="total")
+
+# Chunked read for big files (don't load it all)
+for chunk in pd.read_csv("huge.csv", chunksize=100_000):
+    process(chunk)</code></pre></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Instead of…</th><th>Use…</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><code>iterrows</code> / <code>apply</code> row-wise</td><td>vectorized Series ops, <code>np.where</code></td><td>C-speed, no Python loop</td></tr>
+        <tr><td>repeated <code>concat</code> in a loop</td><td>build a list, concat once</td><td>avoids quadratic copying</td></tr>
+        <tr><td><code>object</code> dtype strings</td><td><code>category</code> / proper dtypes</td><td>less memory, faster groupby</td></tr>
+        <tr><td>chained filters making copies</td><td><code>.loc[mask, cols]</code></td><td>avoids SettingWithCopy bugs</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 id="iv-apis">Working with APIs: pagination &amp; rate limits</h3>
+    <p>Extraction in real pipelines usually means pulling from REST APIs that return data in <b>pages</b> and cap how often you can call (<b>rate limits</b>). The robust pattern: loop until there's no next page, respect the limit by backing off, and retry transient failures with exponential backoff so a blip doesn't kill the whole run.</p>
+    <div class="code"><span class="lang">python</span><pre><code>import requests, time
+
+def fetch_all(url, params=None):
+    params = dict(params or {}); results = []
+    while url:
+        r = requests.get(url, params=params, timeout=30)
+        if r.status_code == 429:                       # rate limited
+            wait = int(r.headers.get("Retry-After", 5))
+            time.sleep(wait); continue                 # back off &amp; retry
+        r.raise_for_status()
+        body = r.json()
+        results.extend(body["data"])
+        url = body.get("next")                         # cursor/next-link pagination
+        params = None                                  # next URL already encodes them
+    return results
+
+# Exponential backoff for transient 5xx errors
+def with_retry(fn, tries=5):
+    for i in range(tries):
+        try: return fn()
+        except requests.RequestException:
+            if i == tries - 1: raise
+            time.sleep(2 ** i)                          # 1,2,4,8,16s</code></pre></div>
+    <div class="note"><b>Pagination styles to recognize:</b> <b>offset/limit</b> (<code>?offset=100&amp;limit=50</code> — simple but can skip/dupe if data changes), <b>page number</b> (<code>?page=3</code>), and <b>cursor/keyset</b> (an opaque "next" token — most reliable for large, changing datasets). Always make extraction <i>resumable</i> and idempotent.</div>
+
+    <h3 id="iv-validation">Data validation &amp; cleaning patterns</h3>
+    <p>Pipelines fail loudly on bad data only if you make them. Validate at the boundaries (schema, types, ranges, uniqueness, freshness) and fail fast or quarantine rather than silently propagating garbage. These checks are exactly the "data quality" tests interviewers ask about for ETL roles.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Check</th><th>Catches</th></tr></thead>
+      <tbody>
+        <tr><td>Schema / dtype</td><td>wrong columns, string where number expected</td></tr>
+        <tr><td>Not-null on keys</td><td>missing IDs that break joins</td></tr>
+        <tr><td>Uniqueness</td><td>duplicate primary keys, fan-out risk</td></tr>
+        <tr><td>Range / domain</td><td>negative ages, impossible dates, bad enums</td></tr>
+        <tr><td>Referential integrity</td><td>foreign keys with no parent</td></tr>
+        <tr><td>Freshness / row-count</td><td>stale or partially-loaded data</td></tr>
+      </tbody>
+    </table></div>
+    <div class="code"><span class="lang">python</span><pre><code># Lightweight assertions in a pipeline (or use Great Expectations / pandera)
+assert df["id"].notna().all(),            "null primary keys"
+assert df["id"].is_unique,                "duplicate ids"
+assert df["amount"].between(0, 1e6).all(),"amount out of range"
+assert df["created_at"].max() &gt;= yesterday, "data looks stale"
+
+# Common cleaning
+df = (df.drop_duplicates(subset="id")
+        .assign(email=lambda d: d["email"].str.strip().str.lower())
+        .fillna({"discount": 0}))
+df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce", utc=True)</code></pre></div>
+
+    <h3 id="iv-sysdesign">System design lite</h3>
+    <p>For junior roles you won't design a distributed database, but you should sketch a sensible high-level pipeline or ML system and reason about choices. Use a consistent skeleton: <b>clarify requirements → identify components → trace the data flow → name tradeoffs and bottlenecks</b>. Think out loud and check scale/latency assumptions first.</p>
+    <div class="grid2">
+      <div class="key"><b>Recommendation system (ML6-flavored).</b> Sources → features/embeddings → <i>candidate generation</i> (fast approximate retrieval over an embedding index, e.g. ANN) → <i>ranking</i> (a model scores the shortlist) → serving + logging for feedback. Tradeoffs: batch precompute vs real-time, cold-start, freshness vs cost.</div>
+      <div class="key"><b>Data pipeline (Rotate-flavored).</b> Ingest (API/DB/files, batch or streaming) → land raw → transform/clean/validate → load to warehouse (star schema) → orchestrate with a DAG (retries, scheduling) → monitor freshness &amp; quality. Tradeoffs: ETL vs ELT, idempotent reloads, incremental vs full.</div>
+    </div>
+    <div class="tip"><b>Always raise:</b> data volume &amp; velocity, latency target (seconds vs nightly), failure/retry behavior, idempotency, monitoring, and cost. Naming the bottleneck before optimizing signals seniority.</div>
+
+    <h3 id="iv-stats">Statistics talking points (cross-cutting)</h3>
+    <p>All three roles can dip into stats. Tie answers back to your thesis methodology where natural — it shows you've <i>applied</i> these, not just memorized them. See the Math chapter for the formal definitions; here are the framings interviewers want.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Prompt</th><th>Crisp framing</th></tr></thead>
+      <tbody>
+        <tr><td>What's a p-value?</td><td>P(data this extreme | null is true) — <i>not</i> P(hypothesis true). Small ⇒ data is surprising under \(H_0\).</td></tr>
+        <tr><td>Confidence interval?</td><td>Range of plausible parameter values; "95%" refers to the procedure's long-run coverage.</td></tr>
+        <tr><td>Correlation vs causation</td><td>Co-movement ≠ cause; confounders/selection can fake it. Your NL/prevalence-proxy work is a real example of interrogating a proxy.</td></tr>
+        <tr><td>How ensure generalization?</td><td>Proper held-out test, CV; LODO when sources differ, to test cross-distribution transfer (your thesis).</td></tr>
+        <tr><td>A/B test basics</td><td>Randomize, pick a metric &amp; \(\alpha\)/power upfront, two-proportion z-test, beware peeking &amp; multiple comparisons.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 id="iv-tradeoffs">Communicating tradeoffs (the meta-skill)</h3>
+    <p>This is what most often separates offers from rejections at your level. Interviewers are listening for structured reasoning, not a memorized verdict. Make your thinking auditable.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Do</th><th>Instead of</th></tr></thead>
+      <tbody>
+        <tr><td>"It depends on X; assuming Y, I'd choose Z because…"</td><td>blurting one answer</td></tr>
+        <tr><td>State the alternative you rejected and why</td><td>pretending there's only one option</td></tr>
+        <tr><td>Name the metric/constraint you're optimizing</td><td>optimizing nothing in particular</td></tr>
+        <tr><td>Quantify the tradeoff (latency vs cost vs accuracy)</td><td>vague "it's better"</td></tr>
+        <tr><td>Say what you'd measure to validate</td><td>asserting it works</td></tr>
+        <tr><td>Think aloud; ask clarifying questions early</td><td>silent then a final answer</td></tr>
+      </tbody>
+    </table></div>
+    <div class="key"><b>Reusable sentence stems.</b> "What are we optimizing for here — latency, accuracy, or cost?" · "The simplest baseline is ___; I'd start there and only add complexity if it pays off." · "The tradeoff is ___ vs ___; given ___ I'd lean ___." · "I'd validate that with ___." · "A failure mode I'd watch for is ___."</div>
+  </section>
+
+  <div class="footer">
+    Built as a personal study guide · concept-first · Python · SQL · Math · ML.<br>
+    Tip: print any section to PDF from your browser for offline revision. Last assembled June 2026.
+  </div>
+
+  </main>
+</div>
+
+<button class="backtop" id="backtop" title="Back to top">↑</button>
+
+<script>
+/* ---------- Build sidebar from headings ---------- */
+const groupMeta = {
+  'sec-python':   {label:'🐍 Python',            color:'var(--accent)'},
+  'sec-dsa':      {label:'🧱 Data Structures & Algorithms', color:'var(--accent2)'},
+  'sec-sql':      {label:'🗄️ SQL & ETL',         color:'var(--accent3)'},
+  'sec-math':     {label:'📐 Math & Statistics',  color:'var(--accent4)'},
+  'sec-ml':       {label:'🤖 Machine Learning',   color:'var(--accent)'},
+  'sec-interview':{label:'🎯 Interview Prep',      color:'var(--accent2)'},
+};
+function buildNav(){
+  const sb = document.getElementById('sidebar');
+  document.querySelectorAll('section[data-group]').forEach(sec=>{
+    // handled below per group
+  });
+  const groups = {};
+  document.querySelectorAll('main section').forEach(sec=>{
+    const g = sec.getAttribute('data-group'); if(!g) return;
+    (groups[g] ||= []).push(sec);
+  });
+  Object.keys(groupMeta).forEach(gid=>{
+    const meta = groupMeta[gid];
+    const secs = groups[gid] || [];
+    const wrap = document.createElement('div'); wrap.className='nav-group';
+    const head = document.createElement('button'); head.className='nav-head';
+    head.innerHTML = `<span class="dot" style="background:${meta.color}"></span>${meta.label}<span class="chev">▾</span>`;
+    const links = document.createElement('div'); links.className='nav-links';
+    secs.forEach(sec=>{
+      const h = sec.querySelector('h2,h3'); if(!h) return;
+      sec.querySelectorAll('h2[id],h3[id]').forEach(hh=>{
+        const a=document.createElement('a'); a.href='#'+hh.id; a.textContent=hh.textContent.replace(/^[^A-Za-z0-9(]+/, '').trim();
+        if(hh.tagName==='H2'){a.style.fontWeight='700';a.style.color='var(--ink)';}
+        links.appendChild(a);
+      });
+    });
+    head.addEventListener('click',()=>wrap.classList.toggle('collapsed'));
+    wrap.appendChild(head); wrap.appendChild(links); sb.appendChild(wrap);
+  });
+}
+buildNav();
+
+/* ---------- Code highlight + copy + lang label ---------- */
+document.querySelectorAll('.code pre code').forEach(c=>{
+  try{hljs.highlightElement(c);}catch(e){}
+});
+document.querySelectorAll('.code').forEach(box=>{
+  const btn=document.createElement('button'); btn.className='copy'; btn.textContent='Copy';
+  btn.addEventListener('click',()=>{
+    const t=box.querySelector('code').innerText;
+    navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1200);});
+  });
+  box.appendChild(btn);
+});
+
+/* ---------- Scroll spy ---------- */
+const navLinks=[...document.querySelectorAll('.nav-links a')];
+const spy=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const id=e.target.id;
+      navLinks.forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+id));
+    }
+  });
+},{rootMargin:'-70px 0px -75% 0px'});
+document.querySelectorAll('main h2[id],main h3[id]').forEach(h=>spy.observe(h));
+
+/* ---------- Theme toggle ---------- */
+const themeBtn=document.getElementById('themeBtn');
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  themeBtn.textContent = t==='dark'?'☀️ Light':'🌙 Dark';
+}
+themeBtn.addEventListener('click',()=>{
+  const cur=document.documentElement.getAttribute('data-theme');
+  setTheme(cur==='dark'?'light':'dark');
+});
+
+/* ---------- Expand/collapse all ---------- */
+let allCollapsed=false;
+document.getElementById('expandAll').addEventListener('click',()=>{
+  allCollapsed=!allCollapsed;
+  document.querySelectorAll('.nav-group').forEach(g=>g.classList.toggle('collapsed',allCollapsed));
+});
+
+/* ---------- Search / filter ---------- */
+const search=document.getElementById('search');
+const allSections=[...document.querySelectorAll('main section')];
+function clearMarks(){document.querySelectorAll('main mark').forEach(m=>{m.replaceWith(document.createTextNode(m.textContent));});}
+search.addEventListener('input',()=>{
+  const q=search.value.trim().toLowerCase();
+  if(!q){allSections.forEach(s=>s.style.display='');clearMarks();return;}
+  let any=false;
+  allSections.forEach(s=>{
+    const hit=s.textContent.toLowerCase().includes(q);
+    s.style.display=hit?'':'none';
+    if(hit)any=true;
+  });
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='/' && document.activeElement!==search){e.preventDefault();search.focus();}
+  if(e.key==='Escape'){search.value='';search.dispatchEvent(new Event('input'));search.blur();}
+});
+
+/* ---------- Back to top ---------- */
+const backtop=document.getElementById('backtop');
+window.addEventListener('scroll',()=>{backtop.classList.toggle('show',window.scrollY>600);});
+backtop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+</script>
+</body>
+</html>
